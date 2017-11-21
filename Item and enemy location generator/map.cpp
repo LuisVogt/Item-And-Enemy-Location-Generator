@@ -77,9 +77,9 @@ void map::populateRooms()
 							tempRoom2->findFullRoom(map);
 							rooms.emplace_back(tempRoom2);
 						}
-						if (tempRoom1->isRoomAdjacent(tempRoom2))
+						if (!tempRoom1->isRoomAdjacent(tempRoom2))
 							tempRoom1->addAdjRoom(tempRoom2);
-						if (tempRoom2->isRoomAdjacent(tempRoom1))
+						if (!tempRoom2->isRoomAdjacent(tempRoom1))
 							tempRoom2->addAdjRoom(tempRoom1);
 					}
 				}
@@ -88,7 +88,7 @@ void map::populateRooms()
 	}
 }
 
-void map::populateItems(std::list<item> items,ALLEGRO_BITMAP *map)
+void map::populateItems(std::list<item*> items,ALLEGRO_BITMAP *map)
 {
 	std::random_device rd;
 	std::mt19937 eng(rd());
@@ -96,43 +96,62 @@ void map::populateItems(std::list<item> items,ALLEGRO_BITMAP *map)
 
 	int fullSpawnChance = 0;
 	int tempRand;
-	for (std::list<item>::iterator i = items.begin(); i != items.end(); ++i)
+	bool alreadySpawnedThisCycle = false;
+	std::list<room*> tempAdjRooms;
+
+	for (std::list<item*>::iterator i = items.begin(); i != items.end(); ++i)
 	{
-		fullSpawnChance += i->getSpawnChance();
+		fullSpawnChance += (*i)->getSpawnChance();
 	}
+
 	std::uniform_int_distribution<> itemRandom(1, fullSpawnChance);
 	for (std::list<room*>::iterator j = rooms.begin(); j != rooms.end(); ++j)
 	{
+		std::cout << "Room chance:" << (*j)->getItemChance() << std::endl;
+
 		if (roomRandom(eng) < (*j)->getItemChance())
 		{
+			std::cout << "MaxChance:" << fullSpawnChance << std::endl;
 			tempRand = itemRandom(eng);
-			for (std::list<item>::iterator i = items.begin(); i != items.end(); ++i)
+			for each (item* itm in items)
 			{
+				std::cout << tempRand << std::endl;
 				if (tempRand > 0)
-					tempRand -= i->getSpawnChance();
-				else
 				{
-					items.emplace_back((*new item(i->getBitmap(), 0, (*j)->getRandomTile())));
-					break;
+					tempRand -= itm->getSpawnChance();
+				}
+				if (tempRand <= 0 && !alreadySpawnedThisCycle)
+				{
+					alreadySpawnedThisCycle = true;
+					std::cout << "POF" << std::endl;
+					spawnItem(itm, (*j)->getRandomTile());
 				}
 			}
-			for (std::list<room*>::iterator k = (*j)->getAdjRooms().begin(); k != (*j)->getAdjRooms().end(); ++k)
+			alreadySpawnedThisCycle = false;
+			tempAdjRooms = (*j)->getAdjRooms();
+			for each (room* r in tempAdjRooms)
 			{
-				(*k)->changeItemChance(-20);
+				r->changeItemChance(-20);
 			}
-			
 		}
+
 	}
+	for each (itemSpawned * i in currentItems)
+	{
+		std::cout<<"Numero de itens:"<<i->getItemCount()<<std::endl;
+	}
+	al_rest(2);
 
 }
 
 void map::saveLargerMapWithItems(int tileSize)
 {
+	std::cout << currentItems.size() << std::endl;
 	int width = al_get_bitmap_width(thisMap);
 	int height = al_get_bitmap_height(thisMap);
 
 	const char *save3 = "teste3.png";
-
+	ALLEGRO_BITMAP * tempMap;
 
 	biggerMap=al_create_bitmap(width*tileSize, height*tileSize);
 	al_set_target_bitmap(biggerMap);
@@ -144,15 +163,36 @@ void map::saveLargerMapWithItems(int tileSize)
 			al_draw_filled_rectangle(i*tileSize, j*tileSize, i*tileSize + tileSize, j*tileSize + tileSize, al_get_pixel(thisMap, i, j));
 		}
 	}
-	for (std::list<item>::iterator k = itemsOnMap.begin(); k != itemsOnMap.end(); ++k)
+
+	for (std::list<itemSpawned*>::iterator i = currentItems.begin(); i != currentItems.end(); i++)
 	{
-		al_draw_bitmap(k->getBitmap(), k->getPos().x, k->getPos().y, 0);
+		for each (pos2D pos in (*i)->getPositions())
+		{
+			tempMap = (*i)->getBitmap();
+			std::cout << tempMap << std::endl;
+			al_draw_bitmap((*i)->getBitmap(), pos.x * tileSize, pos.y * tileSize,0);
+
+		}
 	}
 	if (!al_save_bitmap(save3, biggerMap))
 	{
 		fprintf(stderr, "failed to save image!\n");
 		return;
 	}
+}
+
+void map::spawnItem(item * it, pos2D pos)
+{
+	for each (itemSpawned* iter in currentItems)
+	{
+		if (iter->getBaseItem() == it)
+		{
+			iter->addItem(pos);
+			return;
+		}
+	}
+	currentItems.emplace_back(new itemSpawned(it));
+	currentItems.back()->addItem(pos);
 }
 
 map::map()

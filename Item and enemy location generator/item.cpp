@@ -10,16 +10,10 @@ ALLEGRO_BITMAP* item::getBitmap()
 	return sprite;
 }
 
-item::item(ALLEGRO_BITMAP * newSprite, int newSpawnChance, pos2D newPos)
+item::item(ALLEGRO_BITMAP * newSprite, int newSpawnChance)
 {
 	sprite = newSprite;
 	spawnChance = newSpawnChance;
-	pos = newPos;
-}
-
-pos2D item::getPos()
-{
-	return pos;
 }
 
 item::~item()

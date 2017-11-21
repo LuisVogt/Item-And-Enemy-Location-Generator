@@ -66,6 +66,16 @@ void readMap()
 
 int main(int argc, char **argv)
 {
+	if (!al_init()) {
+		fprintf(stderr, "failed to initialize allegro!\n");
+		return -1;
+	}
+
+	al_init_image_addon();
+	ALLEGRO_PATH *path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
+	ALLEGRO_PATH *path2 = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
+	ALLEGRO_PATH *path3 = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
+
 	const char *save = "teste.png";
 	const char *save2 = "teste2.png";
 	const char *item1 = "beringela.png";
@@ -76,15 +86,14 @@ int main(int argc, char **argv)
 	ALLEGRO_BITMAP *bitmap;
 	ALLEGRO_BITMAP *secondMap;
 
-	list<item> items;
-	items.emplace_back(item(al_load_bitmap(item1), 3, pos2D(0, 0)));
-	items.emplace_back(item(al_load_bitmap(item2), 2, pos2D(0, 0)));
-	items.emplace_back(item(al_load_bitmap(item3), 1, pos2D(0, 0)));
+	list<item*> items;
+	al_set_path_filename(path, "beringela.png");
+	al_set_path_filename(path2, "faca.png");
+	al_set_path_filename(path3, "escudo.png");
 
-	if (!al_init()) {
-		fprintf(stderr, "failed to initialize allegro!\n");
-		return -1;
-	}
+	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), 3));
+	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path2, '/')), 2));
+	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path3, '/')), 1));
 
 	al_init_image_addon();
 	al_init_primitives_addon();
@@ -112,8 +121,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "failed to save image!\n");
 		return -1;
 	}
-	//Map->populateItems(items, bitmap);
+	Map->populateItems(items, bitmap);
 	Map->saveLargerMapWithItems(48);
-	al_rest(3);
 	
 }

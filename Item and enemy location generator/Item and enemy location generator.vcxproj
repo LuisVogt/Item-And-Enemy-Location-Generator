@@ -120,6 +120,7 @@
   <ItemGroup>
     <ClCompile Include="extraFunctions.cpp" />
     <ClCompile Include="item.cpp" />
+    <ClCompile Include="itemSpawned.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map.cpp" />
     <ClCompile Include="room.cpp" />
@@ -131,6 +132,7 @@
     <ClInclude Include="defines.h" />
     <ClInclude Include="extraFunctions.h" />
     <ClInclude Include="item.h" />
+    <ClInclude Include="itemSpawned.h" />
     <ClInclude Include="map.h" />
     <ClInclude Include="room.h" />
     <ClInclude Include="structs.h" />

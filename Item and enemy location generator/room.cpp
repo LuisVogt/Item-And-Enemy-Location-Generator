@@ -89,7 +89,7 @@ int room::getItemChance()
 
 void room::changeItemChance(int changeValue)
 {
-	itemChance + changeValue;
+	itemChance += changeValue;
 	if (itemChance < 0)
 		itemChance = 0;
 	else if (itemChance > 100)
