@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 	Manager.printScores();
 	//Manager.checkIfAllMapsHaveTheSameAmountOfItems();
 	al_rest(10);
-	Manager.saveMapImages("testeEmMassa");
+	Manager.saveMapImages("mapas/testeEmMassa");
 
 	if (!al_save_bitmap(save2, secondMap))
 	{
