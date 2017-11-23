@@ -4,11 +4,16 @@
 #include <iostream>
 #include <allegro5\allegro_primitives.h>
 
+room* map::spawnRoom = nullptr;
+
 void map::drawRooms(ALLEGRO_BITMAP *drawMap)
 {
 	for (std::list<room*>::iterator i = rooms.begin(); i != rooms.end(); ++i)
 	{
-		(*i)->drawMap(drawMap, COLORS::WHITE());
+		if ((*i) == spawnRoom)
+			spawnRoom->drawMap(drawMap, COLORS::RED());
+		else
+			(*i)->drawMap(drawMap, COLORS::WHITE());
 	}
 }
 
@@ -54,6 +59,16 @@ room * map::getRandomRoom()
 	}
 
 	return nullptr;
+}
+
+void map::setSpawnRoom(room * newSpawnRoom)
+{
+	spawnRoom = newSpawnRoom;
+}
+
+std::list<room*> map::getRoomList()
+{
+	return rooms;
 }
 
 int map::getNumberOfRooms()
@@ -120,6 +135,12 @@ void map::populateRooms()
 	}
 }
 
+void map::populateRooms(std::list<room*> setRooms)
+{
+	rooms = setRooms;
+	numberOfRooms = rooms.size();
+}
+
 void map::populateItems(std::list<item*> items, ALLEGRO_BITMAP *map)
 {
 	room* randomRoom;
@@ -136,65 +157,8 @@ void map::populateItems(std::list<item*> items, ALLEGRO_BITMAP *map)
 	}
 }
 
-/*void map::populateItems(std::list<item*> items,ALLEGRO_BITMAP *map)
-{
-	std::random_device rd;
-	std::mt19937 eng(rd());
-	std::uniform_int_distribution<> roomRandom(1, 100);
-
-	int fullSpawnChance = 0;
-	int tempRand;
-	bool alreadySpawnedThisCycle = false;
-	std::list<room*> tempAdjRooms;
-
-	for (std::list<item*>::iterator i = items.begin(); i != items.end(); ++i)
-	{
-		fullSpawnChance += (*i)->getSpawnChance();
-	}
-
-	std::uniform_int_distribution<> itemRandom(1, fullSpawnChance);
-	for (std::list<room*>::iterator j = rooms.begin(); j != rooms.end(); ++j)
-	{
-		std::cout << "Room chance:" << (*j)->getItemChance() << std::endl;
-
-		if (roomRandom(eng) < (*j)->getItemChance())
-		{
-			std::cout << "MaxChance:" << fullSpawnChance << std::endl;
-			tempRand = itemRandom(eng);
-			for each (item* itm in items)
-			{
-				std::cout << tempRand << std::endl;
-				if (tempRand > 0)
-				{
-					tempRand -= itm->getSpawnChance();
-				}
-				if (tempRand <= 0 && !alreadySpawnedThisCycle)
-				{
-					alreadySpawnedThisCycle = true;
-					std::cout << "POF" << std::endl;
-					spawnItem(itm, (*j)->getRandomTile());
-				}
-			}
-			alreadySpawnedThisCycle = false;
-			tempAdjRooms = (*j)->getAdjRooms();
-			for each (room* r in tempAdjRooms)
-			{
-				r->changeItemChance(-20);
-			}
-		}
-
-	}
-	for each (itemSpawned * i in currentItems)
-	{
-		std::cout<<"Numero de itens:"<<i->getItemCount()<<std::endl;
-	}
-	al_rest(2);
-
-}*/
-
 void map::saveLargerMapWithItems(int tileSize, const char* path)
 {
-	std::cout << currentItems.size() << std::endl;
 	int width = al_get_bitmap_width(thisMap);
 	int height = al_get_bitmap_height(thisMap);
 
@@ -207,7 +171,10 @@ void map::saveLargerMapWithItems(int tileSize, const char* path)
 	{
 		for (int j = 0; j < height; j++)
 		{
-			al_draw_filled_rectangle(i*tileSize, j*tileSize, i*tileSize + tileSize, j*tileSize + tileSize, al_get_pixel(thisMap, i, j));
+			if (spawnRoom->isTilePartOfRoom(pos2D(i, j)))
+				al_draw_filled_rectangle(i*tileSize, j*tileSize, i*tileSize + tileSize, j*tileSize + tileSize, COLORS::RED());
+			else
+				al_draw_filled_rectangle(i*tileSize, j*tileSize, i*tileSize + tileSize, j*tileSize + tileSize, al_get_pixel(thisMap, i, j));
 		}
 	}
 
@@ -216,7 +183,6 @@ void map::saveLargerMapWithItems(int tileSize, const char* path)
 		for each (pos2D pos in (*i)->getPositions())
 		{
 			tempMap = (*i)->getBitmap();
-			std::cout << tempMap << std::endl;
 			al_draw_bitmap((*i)->getBitmap(), pos.x * tileSize, pos.y * tileSize,0);
 
 		}
@@ -252,6 +218,25 @@ int map::getNumberOfItems()
 	return n;
 }
 
+void map::evaluateItems()
+{
+	//alterar depois para ser baseado em distância da sala que o item está para outra, ao invés de uma distância em linha reta do item
+	//para o primeiro tile da sala inicial
+	score = 0;
+	for each (itemSpawned* is in currentItems)
+	{
+		for each (pos2D p in is->getPositions())
+		{
+			score += spawnRoom->getFirstTile().distanceToPoint(p);
+		}
+	}
+}
+
+float map::getScore()
+{
+	return score;
+}
+
 map::map()
 {
 }
@@ -260,6 +245,13 @@ map::map(ALLEGRO_BITMAP *newMap, int itemChance)
 {
 	thisMap = newMap;
 	standardItemChance = itemChance;
+}
+
+map::map(ALLEGRO_BITMAP * newMap, int itemChance, std::list<room*> rooms)
+{
+	thisMap = newMap;
+	standardItemChance = itemChance;
+	this->rooms = rooms;
 }
 
 

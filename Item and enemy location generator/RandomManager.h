@@ -21,9 +21,12 @@ public:
 	void defineNumberOfItems(); //Define o número de itens que o mapa terá.
 	void createMaps(int numberOfMaps);
 	void addItemFromFileName(const char* filePath, int spawnChance);
+	void addItemFromFileName(const char* filePath, int spawnChance, int predefinedNumber);
 	void saveMapImages(const char* path);
 	void populateMapsWithItems();
 	void checkIfAllMapsHaveTheSameAmountOfItems();
+	void calculateScores();
+	void printScores();
 	RandomManager(ALLEGRO_BITMAP * mapImage, int chanceForItemToSpawnInARoom);
 	~RandomManager();
 };

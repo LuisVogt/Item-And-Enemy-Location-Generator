@@ -48,13 +48,18 @@ void RandomManager::defineNumberOfItems()
 
 void RandomManager::createMaps(int numberOfMaps)
 {
+	map * firstMap;
+	firstMap = new map(mapImage, chanceForItemToSpawnInARoom);
+	firstMap->populateRooms();
+	maps.emplace_back(firstMap);
 	map * m;
-	for (int i = 0; i < numberOfMaps; i++)
+	for (int i = 1; i < numberOfMaps; i++)
 	{
 		m = new map(mapImage, chanceForItemToSpawnInARoom);
-		m->populateRooms();
+		m->populateRooms(firstMap->getRoomList());
 		maps.emplace_back(m);
 	}
+	map::setSpawnRoom(firstMap->getRandomRoom());
 }
 
 void RandomManager::addItemFromFileName(const char * filePath, int spawnChance)
@@ -62,7 +67,13 @@ void RandomManager::addItemFromFileName(const char * filePath, int spawnChance)
 	ALLEGRO_PATH *path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
 	al_set_path_filename(path, filePath);
 	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, 0));
-	std::cout << "ItemAdress:"<< items.back() << std::endl;
+}
+
+void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, int predefinedNumber)
+{
+	ALLEGRO_PATH *path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
+	al_set_path_filename(path, filePath);
+	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, predefinedNumber));
 }
 
 void RandomManager::saveMapImages(const char* path)
@@ -95,6 +106,23 @@ void RandomManager::checkIfAllMapsHaveTheSameAmountOfItems()
 		std::cout << "Numero de itens no mapa " << n++ << ":" << m->getNumberOfItems() << std::endl;
 	}
 
+}
+
+void RandomManager::calculateScores()
+{
+	for each (map* m in maps)
+	{
+		m->evaluateItems();
+	}
+}
+
+void RandomManager::printScores()
+{
+	int n = 1;
+	for each (map* m in maps)
+	{
+		std::cout << "Score do mapa " << n++ << ":" << m->getScore() << std::endl;
+	}
 }
 
 RandomManager::RandomManager(ALLEGRO_BITMAP * mapImage, int chanceForItemToSpawnInARoom)

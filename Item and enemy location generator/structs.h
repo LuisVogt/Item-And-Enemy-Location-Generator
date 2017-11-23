@@ -48,6 +48,14 @@ struct pos2D
 		return listaAdj;
 	}
 
+	float distanceToPoint(pos2D p)
+	{
+		float tempX = abs(p.x - x);
+		float tempY = abs(p.y - y);
+		float tempSquare = tempX * tempX + tempY * tempY;
+		return sqrt(tempSquare);
+	}
+
 	static pos2D UP()    { return pos2D(0, -1);}
 	static pos2D DOWN()  { return pos2D(0, 1); }
 	static pos2D LEFT()  { return pos2D(-1, 0);}

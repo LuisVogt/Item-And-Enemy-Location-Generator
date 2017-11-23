@@ -110,6 +110,11 @@ pos2D room::getRandomTile()
 	return (*it);
 }
 
+pos2D room::getFirstTile()
+{
+	return tilePos.front();
+}
+
 std::list<room*> room::getAdjRooms()
 {
 	return adjRooms;
@@ -117,7 +122,6 @@ std::list<room*> room::getAdjRooms()
 
 room::room(ALLEGRO_BITMAP * btmp, pos2D firstRoom, int newItemChance)
 {
-	std::cout << "boom " << firstRoom.x << "," << firstRoom.y << std::endl;
 	bitmap = btmp;
 	tilePos.emplace_back(firstRoom);
 	roomSize = 1;

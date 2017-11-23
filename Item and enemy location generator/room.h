@@ -25,6 +25,7 @@ public:
 	int getItemChance();
 	void changeItemChance(int changeValue);
 	pos2D getRandomTile();
+	pos2D getFirstTile();
 	std::list<room*> getAdjRooms();
 
 	room(ALLEGRO_BITMAP* btmp, pos2D firstRoom, int newItemChance);

@@ -14,9 +14,7 @@ itemSpawned::itemSpawned(item * item)
 
 void itemSpawned::addItem(pos2D pos)
 {
-	std::cout << "PING:" << getItemCount() << std::endl;
 	itemPos.emplace_back(pos);
-	std::cout << "PING2:" << getItemCount() << std::endl;
 }
 
 ALLEGRO_BITMAP * itemSpawned::getBitmap()
