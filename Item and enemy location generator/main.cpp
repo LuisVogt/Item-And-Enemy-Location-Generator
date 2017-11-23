@@ -8,7 +8,7 @@
 #include "extraFunctions.h"
 #include "room.h"
 #include "map.h"
-
+#include "RandomManager.h"
 const int TILE_SIZE = 1;
 const int MAP_SIZE = 50; //Define tamanho do mapa, mudar depois para achar dinamicamente.
 
@@ -72,6 +72,8 @@ int main(int argc, char **argv)
 	}
 
 	al_init_image_addon();
+
+
 	ALLEGRO_PATH *path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
 	ALLEGRO_PATH *path2 = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
 	ALLEGRO_PATH *path3 = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
@@ -86,14 +88,19 @@ int main(int argc, char **argv)
 	ALLEGRO_BITMAP *bitmap;
 	ALLEGRO_BITMAP *secondMap;
 
+
 	list<item*> items;
+
 	al_set_path_filename(path, "beringela.png");
 	al_set_path_filename(path2, "faca.png");
 	al_set_path_filename(path3, "escudo.png");
 
-	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), 3));
-	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path2, '/')), 2));
-	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path3, '/')), 1));
+
+
+
+	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), 3,3));
+	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path2, '/')), 2,3));
+	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path3, '/')), 1,3));
 
 	al_init_image_addon();
 	al_init_primitives_addon();
@@ -110,6 +117,17 @@ int main(int argc, char **argv)
 	al_set_target_bitmap(secondMap);
 	al_clear_to_color(al_map_rgb(0, 0, 0));
 
+	RandomManager Manager = RandomManager(bitmap, 70);
+
+	Manager.addItemFromFileName("beringela.png", 3);
+	Manager.addItemFromFileName("faca.png", 2);
+	Manager.addItemFromFileName("escudo.png", 1);
+	Manager.createMaps(20);
+	Manager.defineNumberOfItems();
+	Manager.populateMapsWithItems();
+	Manager.checkIfAllMapsHaveTheSameAmountOfItems();
+	al_rest(10);
+	Manager.saveMapImages("testeEmMassa");
 
 	map* Map = new map(bitmap,70);
 
@@ -122,6 +140,6 @@ int main(int argc, char **argv)
 		return -1;
 	}
 	Map->populateItems(items, bitmap);
-	Map->saveLargerMapWithItems(48);
+	Map->saveLargerMapWithItems(48,save);
 	
 }

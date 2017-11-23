@@ -20,13 +20,16 @@ public:
 	void drawRooms(ALLEGRO_BITMAP *drawMap);
 	void drawRoomsWithRandomColors(ALLEGRO_BITMAP *drawMap);
 	room* findRoomFromTile(pos2D tile);
+	room* getRandomRoom();
+	int getNumberOfRooms();
+	int getStandardItemChance();
 	void populateRooms();
 	void populateItems(std::list<item*> items, ALLEGRO_BITMAP *map);
-	void saveLargerMapWithItems(int tileSize);
+	void saveLargerMapWithItems(int tileSize, const char* path);
 	void spawnItem(item * it, pos2D pos);
+	int getNumberOfItems();
 
 	map();
 	map(ALLEGRO_BITMAP *newMap,int itemChance);
 	~map();
 };
-

@@ -36,6 +36,36 @@ room * map::findRoomFromTile(pos2D tile)
 	return nullptr;
 }
 
+room * map::getRandomRoom()
+{
+	std::random_device rd;
+	std::mt19937 eng(rd());
+	std::uniform_int_distribution<> roomRandom(1, numberOfRooms);
+
+	int randomNumber = roomRandom(eng);
+
+	for (std::list<room*>::iterator i = rooms.begin(); i != rooms.end(); ++i)
+	{
+		randomNumber--;
+		if (randomNumber <= 0)
+		{
+			return (*i);
+		}
+	}
+
+	return nullptr;
+}
+
+int map::getNumberOfRooms()
+{
+	return numberOfRooms;
+}
+
+int map::getStandardItemChance()
+{
+	return standardItemChance;
+}
+
 void map::populateRooms()
 {
 	ALLEGRO_BITMAP *map = thisMap;
@@ -67,12 +97,14 @@ void map::populateRooms()
 						tempRoom2 = findRoomFromTile(tempTile2);
 						if (tempRoom1 == nullptr)
 						{
+							numberOfRooms++;
 							tempRoom1 = new room(map, tempTile1, standardItemChance);
 							tempRoom1->findFullRoom(map);
 							rooms.emplace_back(tempRoom1);
 						}
 						if (tempRoom2 == nullptr)
 						{
+							numberOfRooms++;
 							tempRoom2 = new room(map, tempTile2, standardItemChance);
 							tempRoom2->findFullRoom(map);
 							rooms.emplace_back(tempRoom2);
@@ -88,7 +120,23 @@ void map::populateRooms()
 	}
 }
 
-void map::populateItems(std::list<item*> items,ALLEGRO_BITMAP *map)
+void map::populateItems(std::list<item*> items, ALLEGRO_BITMAP *map)
+{
+	room* randomRoom;
+	int tempNumberOfItems = 0;
+	for each (item* i in items)
+	{
+		tempNumberOfItems = i->getNumberOfItems();
+		while (tempNumberOfItems>0)
+		{
+			randomRoom = getRandomRoom();
+			spawnItem(i, randomRoom->getRandomTile());
+			tempNumberOfItems--;
+		}
+	}
+}
+
+/*void map::populateItems(std::list<item*> items,ALLEGRO_BITMAP *map)
 {
 	std::random_device rd;
 	std::mt19937 eng(rd());
@@ -142,15 +190,14 @@ void map::populateItems(std::list<item*> items,ALLEGRO_BITMAP *map)
 	}
 	al_rest(2);
 
-}
+}*/
 
-void map::saveLargerMapWithItems(int tileSize)
+void map::saveLargerMapWithItems(int tileSize, const char* path)
 {
 	std::cout << currentItems.size() << std::endl;
 	int width = al_get_bitmap_width(thisMap);
 	int height = al_get_bitmap_height(thisMap);
 
-	const char *save3 = "teste3.png";
 	ALLEGRO_BITMAP * tempMap;
 
 	biggerMap=al_create_bitmap(width*tileSize, height*tileSize);
@@ -174,7 +221,7 @@ void map::saveLargerMapWithItems(int tileSize)
 
 		}
 	}
-	if (!al_save_bitmap(save3, biggerMap))
+	if (!al_save_bitmap(path, biggerMap))
 	{
 		fprintf(stderr, "failed to save image!\n");
 		return;
@@ -193,6 +240,16 @@ void map::spawnItem(item * it, pos2D pos)
 	}
 	currentItems.emplace_back(new itemSpawned(it));
 	currentItems.back()->addItem(pos);
+}
+
+int map::getNumberOfItems()
+{
+	int n = 0;
+	for each (itemSpawned* i in currentItems)
+	{
+		n += i->getItemCount();
+	}
+	return n;
 }
 
 map::map()
