@@ -120,6 +120,41 @@ std::list<room*> room::getAdjRooms()
 	return adjRooms;
 }
 
+void room::resetDistance()
+{
+	roomDistance = -1;
+}
+
+void room::setDistance(int d)
+{
+	if (d >= 0)
+	{
+		roomDistance = d;
+	}
+}
+
+int room::getDistance()
+{
+	return roomDistance;
+}
+
+void room::setParent(room * r)
+{
+	parent = r;
+}
+
+void room::resetParent()
+{
+
+	parent = nullptr;
+}
+
+room * room::getParent()
+{
+	return parent;
+}
+
+
 room::room(ALLEGRO_BITMAP * btmp, pos2D firstRoom, int newItemChance)
 {
 	bitmap = btmp;
@@ -127,6 +162,8 @@ room::room(ALLEGRO_BITMAP * btmp, pos2D firstRoom, int newItemChance)
 	roomSize = 1;
 	itemChance = newItemChance;
 	findFullRoom(bitmap);
+	parent = nullptr;
+	roomDistance = -1;
 }
 
 room::~room()

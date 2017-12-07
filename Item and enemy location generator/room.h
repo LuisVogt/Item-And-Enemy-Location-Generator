@@ -12,8 +12,10 @@ private:
 	std::list<pos2D> doors;
 	std::list<pos2D> previousTileToDoor;
 	ALLEGRO_BITMAP *bitmap;
+	room* parent;
 	int itemChance;
 	int roomSize;
+	int roomDistance;
 public:
 	void addTile(pos2D newTilePos);
 	void addDoor(pos2D door, pos2D previousTile);
@@ -27,6 +29,12 @@ public:
 	pos2D getRandomTile();
 	pos2D getFirstTile();
 	std::list<room*> getAdjRooms();
+	void resetDistance();
+	void setDistance(int d);
+	int getDistance();
+	void setParent(room* r);
+	void resetParent();
+	room* getParent();
 
 	room(ALLEGRO_BITMAP* btmp, pos2D firstRoom, int newItemChance);
 	~room();

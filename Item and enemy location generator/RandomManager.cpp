@@ -53,27 +53,38 @@ void RandomManager::createMaps(int numberOfMaps)
 	firstMap->populateRooms();
 	maps.emplace_back(firstMap);
 	map * m;
+	map::setSpawnRoom(firstMap->getRandomRoom());
+	firstMap->checkRoomsDistancesToSpawn();
+	map::setEndRoom(firstMap->getRandomRoom(firstMap->getMaxDistance()-1));
+	//getMainPaths();
+	////firstMap->findMainPath();
+	//firstMap->resetRoomDistances();
+	//firstMap->checkRoomsDistancesToMainPath();
+	
 	for (int i = 1; i < numberOfMaps; i++)
 	{
 		m = new map(mapImage, chanceForItemToSpawnInARoom);
 		m->populateRooms(firstMap->getRoomList());
 		maps.emplace_back(m);
 	}
-	map::setSpawnRoom(firstMap->getRandomRoom());
+	getMainPaths();
+	//firstMap->findMainPath();
+	firstMap->resetRoomDistances();
+	firstMap->checkRoomsDistancesToMainPath();
 }
 
-void RandomManager::addItemFromFileName(const char * filePath, int spawnChance)
+void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, float distanceMultiplier)
 {
 	ALLEGRO_PATH *path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
 	al_set_path_filename(path, filePath);
-	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, 0));
+	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, 0, distanceMultiplier));
 }
 
-void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, int predefinedNumber)
+void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, int predefinedNumber, float distanceMultiplier)
 {
 	ALLEGRO_PATH *path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
 	al_set_path_filename(path, filePath);
-	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, predefinedNumber));
+	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, predefinedNumber,distanceMultiplier));
 }
 
 void RandomManager::saveMapImages(const char* path)
@@ -122,6 +133,15 @@ void RandomManager::printScores()
 	for each (map* m in maps)
 	{
 		std::cout << "Score do mapa " << n++ << ":" << m->getScore() << std::endl;
+	}
+}
+
+void RandomManager::getMainPaths()
+{
+	maps.front()->findMainPath();
+	for each (map* m in maps)
+	{
+		m->setMainPath(maps.front()->getMainPath());
 	}
 }
 

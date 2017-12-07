@@ -25,11 +25,17 @@ void item::addNumberOfItems()
 	numberOfItems++;
 }
 
-item::item(ALLEGRO_BITMAP * newSprite, int newSpawnChance, int numberOfItems)
+float item::getDistanceMultiplier()
+{
+	return distanceMultiplier;
+}
+
+item::item(ALLEGRO_BITMAP * newSprite, int newSpawnChance, int numberOfItems, float newDistanceMultiplier)
 {
 	sprite = newSprite;
 	spawnChance = newSpawnChance;
 	this->numberOfItems = numberOfItems;
+	distanceMultiplier = newDistanceMultiplier;
 }
 
 item::~item()

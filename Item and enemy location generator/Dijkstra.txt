@@ -1,0 +1,53 @@
+std::list<room*> Djikstra(room * init, room * end, int &distance)
+{
+	std::list<room*> open;
+	std::list<room*> closed;
+	std::list<room*> path;
+	std::cout << "Init:" << init << " End: " << end << std::endl;
+
+	room* tempRoom;
+	std::list<room*>::iterator it;
+	open.emplace_back(init);
+	while (!open.empty())
+	{
+		std::cout << "Open:" << open.size() << " Closed: " << closed.size() << std::endl;
+		tempRoom = open.front();
+		std::cout << "TEMPTOT:" << tempRoom << std::endl;
+		open.pop_front();
+		closed.emplace_back(tempRoom);
+
+		if (tempRoom == end)
+		{
+			std::cout << "EXCUSE-ME" << std::endl;
+			distance = getDistanceToFirstRoom(end);
+			path = getRoomPath(end);
+			/*for each (room* r in closed)
+			{
+				r->resetParent();
+			}*/
+			return path;
+		}
+		for each (room* r in tempRoom->getAdjRooms())
+		{
+			it = std::find(closed.begin(), closed.end(), r);
+			if (it != closed.end())
+			{
+				continue;
+			}
+			it = std::find(open.begin(), open.end(), r);
+			if ((getDistanceToFirstRoom(tempRoom) < getDistanceToFirstRoom(r))
+				|| it == open.end())
+			{
+				if (it != open.end())
+					std::cout << "IN OPEN" << std::endl;
+				std::cout << "TempDist:" << getDistanceToFirstRoom(tempRoom) << " rDist:" << getDistanceToFirstRoom(r) << std::endl;
+				r->setParent(tempRoom);
+				if (it == open.end())
+				{
+					open.emplace_back(r);
+				}
+			}
+		}
+	}
+	return path;
+}

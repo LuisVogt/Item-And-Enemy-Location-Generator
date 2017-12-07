@@ -32,6 +32,11 @@ item * itemSpawned::getBaseItem()
 	return baseItem;
 }
 
+float itemSpawned::getMultiplier()
+{
+	return baseItem->getDistanceMultiplier();
+}
+
 
 itemSpawned::~itemSpawned()
 {

@@ -20,13 +20,14 @@ public:
 	item* getRandomItem();
 	void defineNumberOfItems(); //Define o número de itens que o mapa terá.
 	void createMaps(int numberOfMaps);
-	void addItemFromFileName(const char* filePath, int spawnChance);
-	void addItemFromFileName(const char* filePath, int spawnChance, int predefinedNumber);
+	void addItemFromFileName(const char* filePath, int spawnChance, float distanceMultiplier);
+	void addItemFromFileName(const char* filePath, int spawnChance, int predefinedNumber, float distanceMultiplier);
 	void saveMapImages(const char* path);
 	void populateMapsWithItems();
 	void checkIfAllMapsHaveTheSameAmountOfItems();
 	void calculateScores();
 	void printScores();
+	void getMainPaths();
 	RandomManager(ALLEGRO_BITMAP * mapImage, int chanceForItemToSpawnInARoom);
 	~RandomManager();
 };

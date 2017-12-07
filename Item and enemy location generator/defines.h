@@ -7,4 +7,6 @@ namespace COLORS {
 	static const ALLEGRO_COLOR GREEN() { return al_map_rgb(0, 255, 0); }
 	static const ALLEGRO_COLOR BLACK() { return al_map_rgb(0, 0, 0); }
 	static const ALLEGRO_COLOR GREY()  { return al_map_rgb(127, 127, 127); }
+	static const ALLEGRO_COLOR BLUE()  { return al_map_rgb(0, 0, 255); }
+	static const ALLEGRO_COLOR PURPLE() { return al_map_rgb(153, 51, 153); }
 }

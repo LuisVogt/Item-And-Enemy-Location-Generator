@@ -87,6 +87,7 @@ int main(int argc, char **argv)
 	al_set_target_bitmap(bitmap);
 	al_clear_to_color(al_map_rgb(0, 0, 255));
 	readMap();
+
 	if (!al_save_bitmap(save, bitmap))
 	{
 		fprintf(stderr, "failed to save image!\n");
@@ -95,20 +96,20 @@ int main(int argc, char **argv)
 	al_set_target_bitmap(secondMap);
 	al_clear_to_color(al_map_rgb(0, 0, 0));
 
+
+
 	RandomManager Manager = RandomManager(bitmap, 70);
 
-	Manager.addItemFromFileName("beringela.png", 3);
-	Manager.addItemFromFileName("faca.png", 2);
-	Manager.addItemFromFileName("escudo.png", 1);
-	Manager.addItemFromFileName("lotus.png", 0, 1);
-
+	Manager.addItemFromFileName("beringela.png", 3, 0.5f);
+	Manager.addItemFromFileName("faca.png", 2, 5.0f);
+	Manager.addItemFromFileName("escudo.png", 1, 5.0f);
+	Manager.addItemFromFileName("lotus.png", 0, 1, 20.0f);
 	Manager.createMaps(20);
+
 	Manager.defineNumberOfItems();
 	Manager.populateMapsWithItems();
 	Manager.calculateScores();
 	Manager.printScores();
-	//Manager.checkIfAllMapsHaveTheSameAmountOfItems();
-	al_rest(10);
 	Manager.saveMapImages("mapas/testeEmMassa");
 
 	if (!al_save_bitmap(save2, secondMap))
