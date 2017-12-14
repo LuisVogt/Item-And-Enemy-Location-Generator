@@ -4,11 +4,14 @@
 #include <allegro5\allegro.h>
 #include <allegro5\allegro_primitives.h>
 #include <allegro5\allegro_image.h>
+#include <io.h>
 #include "defines.h"
 #include "extraFunctions.h"
 #include "room.h"
 #include "map.h"
 #include "RandomManager.h"
+#include "GeneticManager.h"
+
 const int TILE_SIZE = 1;
 const int MAP_SIZE = 50; //Define tamanho do mapa, mudar depois para achar dinamicamente.
 
@@ -37,10 +40,10 @@ void drawBitmapMap(int i, int j, char color)
 		break;
 	}
 	float x1 = i*(float)TILE_SIZE;
-float y1 = j*(float)TILE_SIZE;
-float x2 = x1 + TILE_SIZE;
-float y2 = y1 + TILE_SIZE;
-al_draw_filled_rectangle(x1, y1, x2, y2, c);
+	float y1 = j*(float)TILE_SIZE;
+	float x2 = x1 + TILE_SIZE;
+	float y2 = y1 + TILE_SIZE;
+	al_draw_filled_rectangle(x1, y1, x2, y2, c);
 }
 
 void readMap()
@@ -99,18 +102,23 @@ int main(int argc, char **argv)
 
 
 	RandomManager Manager = RandomManager(bitmap, 70);
+	GeneticManager GeneticMan = GeneticManager(0.1f, 0.5f, 5, &Manager);
 
-	Manager.addItemFromFileName("beringela.png", 3, 0.5f);
-	Manager.addItemFromFileName("faca.png", 2, 5.0f);
-	Manager.addItemFromFileName("escudo.png", 1, 5.0f);
-	Manager.addItemFromFileName("lotus.png", 0, 1, 20.0f);
+	Manager.addItemFromFileName("beringela.png", 3, 1.0f, 1.0f);
+	Manager.addItemFromFileName("faca.png", 2, 4.0f, 5.0f);
+	Manager.addItemFromFileName("escudo.png", 1, 5.0f, 10.0f);
+	Manager.addItemFromFileName("lotus.png", 0, 20.0f, 1.0f);
 	Manager.createMaps(20);
 
 	Manager.defineNumberOfItems();
 	Manager.populateMapsWithItems();
 	Manager.calculateScores();
 	Manager.printScores();
-	Manager.saveMapImages("mapas/testeEmMassa");
+	al_rest(10);
+	GeneticMan.processAllGenerations();
+	Manager.printScores();
+	al_rest(10);
+	Manager.saveMapImages("mapas", "testeEmMassa");
 
 	if (!al_save_bitmap(save2, secondMap))
 	{
@@ -118,5 +126,5 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	
+
 }

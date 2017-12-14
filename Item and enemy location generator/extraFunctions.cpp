@@ -60,7 +60,7 @@ int getDistanceToFirstRoom(room* r)
 	}
 }
 
-std::list<room*> Djikstra(room * init, room * end, int &distance)
+std::list<room*> Djikstra(room * init, room * end)
 {
 
 	std::list<room*> open;
@@ -81,7 +81,7 @@ std::list<room*> Djikstra(room * init, room * end, int &distance)
 		if (tempRoom == end)
 		{
 			path = getRoomPath(end);
-			distance = getDistanceToFirstRoom(end);
+			//path.emplace_front(init);
 			for each (room* r in closed)
 			{
 				r->resetParent();
@@ -126,6 +126,24 @@ int getRandomNumberInRange(int begining, int end)
 	std::uniform_int_distribution<> roomRandom(begining, end);
 
 	return roomRandom(eng);
+}
+
+float getRandomPercentage()
+{
+	std::random_device rd;
+	std::mt19937 eng(rd());
+	std::uniform_real_distribution<> randomNumber(0, 1);
+
+	return randomNumber(eng);
+}
+
+float getRandomNumberInRange(float begining, float end)
+{
+	std::random_device rd;
+	std::mt19937 eng(rd());
+	std::uniform_real_distribution<> randomNumber(begining, end);
+
+	return randomNumber(eng);
 }
 
 void insertInOrder(std::list<room*>& rList, room* rm)

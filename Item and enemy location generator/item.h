@@ -6,7 +6,9 @@ class item
 private:
 	int spawnChance;
 	int numberOfItems;
+	int maxNumberOfItems;
 	float distanceMultiplier;
+	float spreadMultiplier;
 	ALLEGRO_BITMAP *sprite;
 public:
 	int getSpawnChance();
@@ -15,6 +17,7 @@ public:
 	void subtractNumberOfItems();
 	void addNumberOfItems();
 	float getDistanceMultiplier();
-	item(ALLEGRO_BITMAP *newSprite,int newSpawnChance,int numberOfItems, float newDistanceMultiplier);
+	float getSpreadMultiplier();
+	item(ALLEGRO_BITMAP *newSprite,int newSpawnChance,int minNumberOfItems, int maxNumberOfItems,float newDistanceMultiplier, float newSpreadMultiplier);
 	~item();
 };

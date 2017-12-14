@@ -119,6 +119,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="extraFunctions.cpp" />
+    <ClCompile Include="GeneticManager.cpp" />
     <ClCompile Include="item.cpp" />
     <ClCompile Include="itemSpawned.cpp" />
     <ClCompile Include="main.cpp" />
@@ -133,6 +134,7 @@
   <ItemGroup>
     <ClInclude Include="defines.h" />
     <ClInclude Include="extraFunctions.h" />
+    <ClInclude Include="GeneticManager.h" />
     <ClInclude Include="item.h" />
     <ClInclude Include="itemSpawned.h" />
     <ClInclude Include="map.h" />

@@ -18,13 +18,18 @@ private:
 	int chanceForItemToSpawnInARoom;
 public:
 	item* getRandomItem();
-	void defineNumberOfItems(); //Define o número de itens que o mapa terá.
+	std::list<map*>* getMaps();
+	void defineNumberOfItems();
 	void createMaps(int numberOfMaps);
-	void addItemFromFileName(const char* filePath, int spawnChance, float distanceMultiplier);
-	void addItemFromFileName(const char* filePath, int spawnChance, int predefinedNumber, float distanceMultiplier);
-	void saveMapImages(const char* path);
+	void addMaps(int numberOfMaps);
+	void addItemFromFileName(const char* filePath, int spawnChance, float distanceMultiplier, float spreadMultiplier);
+	void addItemFromFileName(const char* filePath, int spawnChance, int minNumberOfItems, float distanceMultiplier, float spreadMultiplier);
+	void addItemFromFileName(const char* filePath, int spawnChance, int minNumberOfItems, int maxNumberOfItems, float distanceMultiplier, float spreadMultiplier);
+	void saveMapImages(const char* path, const char* fileName);
 	void populateMapsWithItems();
 	void checkIfAllMapsHaveTheSameAmountOfItems();
+	bool isMapASmallerThanB(map* A, map* B);
+	void sortMaps();
 	void calculateScores();
 	void printScores();
 	void getMainPaths();

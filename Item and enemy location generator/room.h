@@ -29,6 +29,7 @@ public:
 	pos2D getRandomTile();
 	pos2D getFirstTile();
 	std::list<room*> getAdjRooms();
+	std::list<pos2D> getTilesList();
 	void resetDistance();
 	void setDistance(int d);
 	int getDistance();

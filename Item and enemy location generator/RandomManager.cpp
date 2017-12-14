@@ -1,5 +1,6 @@
 #include "RandomManager.h"
 #include <string>
+#include <algorithm>
 
 
 item * RandomManager::getRandomItem()
@@ -28,10 +29,22 @@ item * RandomManager::getRandomItem()
 	return temp;
 }
 
+std::list<map*>* RandomManager::getMaps()
+{
+	return &maps;
+}
+
 void RandomManager::defineNumberOfItems()
 {
+	bool isTotalWeightZero = true;
+	for each (item* itm in items)
+	{
+		if (itm->getSpawnChance() != 0)
+			isTotalWeightZero = false;
+	}
+	if (isTotalWeightZero)
+		return;
 	int numberOfRooms = maps.front()->getNumberOfRooms();
-
 	std::random_device rd;
 	std::mt19937 eng(rd());
 	std::uniform_int_distribution<> roomRandom(1, 100);
@@ -39,6 +52,7 @@ void RandomManager::defineNumberOfItems()
 	for (int i = 0; i < numberOfRooms; i++)
 	{
 		roomChance = roomRandom(eng);
+
 		if (roomChance <= chanceForItemToSpawnInARoom)
 		{
 			getRandomItem()->addNumberOfItems();
@@ -55,46 +69,63 @@ void RandomManager::createMaps(int numberOfMaps)
 	map * m;
 	map::setSpawnRoom(firstMap->getRandomRoom());
 	firstMap->checkRoomsDistancesToSpawn();
-	map::setEndRoom(firstMap->getRandomRoom(firstMap->getMaxDistance()-1));
-	//getMainPaths();
-	////firstMap->findMainPath();
-	//firstMap->resetRoomDistances();
-	//firstMap->checkRoomsDistancesToMainPath();
-	
+	map::setEndRoom(firstMap->getRandomRoom(firstMap->getMaxDistance() - 1));
+
+	addMaps(numberOfMaps);
+}
+
+void RandomManager::addMaps(int numberOfMaps)
+{
+	map* m;
 	for (int i = 1; i < numberOfMaps; i++)
 	{
 		m = new map(mapImage, chanceForItemToSpawnInARoom);
-		m->populateRooms(firstMap->getRoomList());
+		m->populateRooms(maps.front()->getRoomList());
 		maps.emplace_back(m);
 	}
 	getMainPaths();
-	//firstMap->findMainPath();
-	firstMap->resetRoomDistances();
-	firstMap->checkRoomsDistancesToMainPath();
+	maps.front()->resetRoomDistances();
+	maps.front()->checkRoomsDistancesToMainPath();
 }
 
-void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, float distanceMultiplier)
+void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, float distanceMultiplier, float spreadMultiplier)
 {
 	ALLEGRO_PATH *path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
 	al_set_path_filename(path, filePath);
-	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, 0, distanceMultiplier));
+	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, 0, 99999, distanceMultiplier, spreadMultiplier));
 }
 
-void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, int predefinedNumber, float distanceMultiplier)
+void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, int minNumberOfItems, float distanceMultiplier, float spreadMultiplier)
 {
 	ALLEGRO_PATH *path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
 	al_set_path_filename(path, filePath);
-	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, predefinedNumber,distanceMultiplier));
+	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, minNumberOfItems, 99999, distanceMultiplier, spreadMultiplier));
 }
 
-void RandomManager::saveMapImages(const char* path)
+void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, int minNumberOfItems, int maxNumberOfItems, float distanceMultiplier, float spreadMultiplier)
 {
+	ALLEGRO_PATH *path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
+	al_set_path_filename(path, filePath);
+	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, minNumberOfItems, maxNumberOfItems, distanceMultiplier, spreadMultiplier));
+}
+
+void RandomManager::saveMapImages(const char* path, const char* fileName)
+{
+	std::string command = "del /Q ";
+	std::string deletePath = path;
+	deletePath += "\\*.png";
+	system(command.append(path).c_str());
 	int i = 1;
 	std::string strPath;
 	for each (map* m in maps)
 	{
+		std::cout << "Saving map " << i << std::endl;
 		strPath = path;
-		strPath+=std::to_string(i);
+		strPath += "/";
+		strPath += fileName;
+		strPath += std::to_string(i);
+		strPath += " - Score ";
+		strPath += std::to_string(m->getScore());
 		strPath += ".png";
 		m->saveLargerMapWithItems(48, strPath.c_str());
 		++i;
@@ -117,6 +148,22 @@ void RandomManager::checkIfAllMapsHaveTheSameAmountOfItems()
 		std::cout << "Numero de itens no mapa " << n++ << ":" << m->getNumberOfItems() << std::endl;
 	}
 
+}
+
+bool RandomManager::isMapASmallerThanB(map * A, map * B)
+{
+	float scoreA = A->getScore();
+	float scoreB = B->getScore();
+	if (scoreA < scoreB)
+		return true;
+	return false;
+}
+
+void RandomManager::sortMaps()
+{
+	std::list<map*>::iterator begin = maps.begin();
+	std::list<map*>::iterator end = maps.end();
+	//std::sort(begin, end, isMapASmallerThanB);
 }
 
 void RandomManager::calculateScores()

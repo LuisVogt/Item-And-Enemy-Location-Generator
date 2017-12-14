@@ -120,6 +120,11 @@ std::list<room*> room::getAdjRooms()
 	return adjRooms;
 }
 
+std::list<pos2D> room::getTilesList()
+{
+	return tilePos;
+}
+
 void room::resetDistance()
 {
 	roomDistance = -1;

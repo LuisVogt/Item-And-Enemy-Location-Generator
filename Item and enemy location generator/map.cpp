@@ -1,6 +1,7 @@
 #include "map.h"
 #include "defines.h"
 #include <random>
+#include <vector>
 #include <iostream>
 #include <allegro5\allegro_primitives.h>
 
@@ -40,11 +41,11 @@ void map::drawRoomsWithRandomColors(ALLEGRO_BITMAP *drawMap)
 
 room * map::findRoomFromTile(pos2D tile)
 {
-	for(std::list<room*>::iterator i = rooms.begin(); i!= rooms.end(); ++i)
+	for each (room* r in rooms)
 	{
-		if ((*i)->isTilePartOfRoom(tile))
+		if (r->isTilePartOfRoom(tile))
 		{
-			return (*i);
+			return r;
 		}
 	}
 	return nullptr;
@@ -123,6 +124,26 @@ void map::setEndRoom(room * newEndRoom)
 	endRoom = newEndRoom;
 }
 
+std::list<itemSpawned*> map::getItemSpawneds()
+{
+	std::cout<< "CurrentSize: "<< currentItems.size() <<std::endl; 
+	al_rest(3);
+	return currentItems;
+}
+
+void map::setItemSpawned(std::list<itemSpawned*> its)
+{
+	currentItems = its;
+	evaluateItems();
+}
+
+bool map::hasItems()
+{
+	if (!currentItems.empty())
+		return true;
+	return false;
+}
+
 std::list<room*> map::getRoomList()
 {
 	return rooms;
@@ -186,35 +207,6 @@ void map::populateRooms()
 							tempRoom2->addAdjRoom(tempRoom1);
 					}
 				}
-				/*for (std::list<pos2D>::iterator aroundDoor = tempTile.begin(); aroundDoor != tempTile.end(); ++aroundDoor)
-				{
-					if (areTwoColorsTheSame(al_get_pixel(map, aroundDoor->x, aroundDoor->y), COLORS::WHITE()))
-					{
-						tempTile1 = (*aroundDoor);
-						tempTile2 = ((*aroundDoor) + (pos2D(i, j) - (*aroundDoor)) * 3);
-
-						tempRoom1 = findRoomFromTile(tempTile1);
-						tempRoom2 = findRoomFromTile(tempTile2);
-						if (tempRoom1 == nullptr)
-						{
-							numberOfRooms++;
-							tempRoom1 = new room(map, tempTile1, standardItemChance);
-							tempRoom1->findFullRoom(map);
-							rooms.emplace_back(tempRoom1);
-						}
-						if (tempRoom2 == nullptr)
-						{
-							numberOfRooms++;
-							tempRoom2 = new room(map, tempTile2, standardItemChance);
-							tempRoom2->findFullRoom(map);
-							rooms.emplace_back(tempRoom2);
-						}
-						if (!tempRoom1->isRoomAdjacent(tempRoom2))
-							tempRoom1->addAdjRoom(tempRoom2);
-						if (!tempRoom2->isRoomAdjacent(tempRoom1))
-							tempRoom2->addAdjRoom(tempRoom1);
-					}
-				}*/
 			}
 		}
 	}
@@ -228,12 +220,16 @@ void map::populateRooms(std::list<room*> setRooms)
 
 void map::populateItems(std::list<item*> items, ALLEGRO_BITMAP *map)
 {
+	if (!currentItems.empty())
+	{
+		return;
+	}
 	room* randomRoom;
 	int tempNumberOfItems = 0;
 	for each (item* i in items)
 	{
 		tempNumberOfItems = i->getNumberOfItems();
-		while (tempNumberOfItems>0)
+		while (tempNumberOfItems > 0)
 		{
 			randomRoom = getRandomRoom();
 			spawnItem(i, randomRoom->getRandomTile());
@@ -248,26 +244,27 @@ void map::saveLargerMapWithItems(int tileSize, const char* path)
 	int height = al_get_bitmap_height(thisMap);
 
 	ALLEGRO_BITMAP * tempMap;
-	
+
 	std::list<room*>::iterator it;
 
-	biggerMap=al_create_bitmap(width*tileSize, height*tileSize);
+	biggerMap = al_create_bitmap(width*tileSize, height*tileSize);
 	al_set_target_bitmap(biggerMap);
 
 	for (int i = 0; i < width; i++)
 	{
 		for (int j = 0; j < height; j++)
 		{
-			al_draw_filled_rectangle(i*tileSize, j*tileSize, i*tileSize + tileSize, j*tileSize + tileSize, al_get_pixel(thisMap, i, j));
+			//al_draw_filled_rectangle(i*tileSize, j*tileSize, i*tileSize + tileSize, j*tileSize + tileSize, al_get_pixel(thisMap, i, j));
 			it = std::find(mainPath.begin(), mainPath.end(), findRoomFromTile(pos2D(i, j)));
-			if (it != mainPath.end())
-			{
-				al_draw_filled_rectangle(i*tileSize, j*tileSize, i*tileSize + tileSize, j*tileSize + tileSize, COLORS::BLUE());
-			}
 			if (spawnRoom->isTilePartOfRoom(pos2D(i, j)))
 				al_draw_filled_rectangle(i*tileSize, j*tileSize, i*tileSize + tileSize, j*tileSize + tileSize, COLORS::RED());
 			else if (endRoom->isTilePartOfRoom(pos2D(i, j)))
 				al_draw_filled_rectangle(i*tileSize, j*tileSize, i*tileSize + tileSize, j*tileSize + tileSize, COLORS::PURPLE());
+			else if (it != mainPath.end())
+				al_draw_filled_rectangle(i*tileSize, j*tileSize, i*tileSize + tileSize, j*tileSize + tileSize, COLORS::BLUE());
+			else
+				al_draw_filled_rectangle(i*tileSize, j*tileSize, i*tileSize + tileSize, j*tileSize + tileSize, al_get_pixel(thisMap, i, j));
+			it = std::find(mainPath.begin(), mainPath.end(), findRoomFromTile(pos2D(i, j)));
 		}
 	}
 
@@ -276,7 +273,7 @@ void map::saveLargerMapWithItems(int tileSize, const char* path)
 		for each (pos2D pos in (*i)->getPositions())
 		{
 			tempMap = (*i)->getBitmap();
-			al_draw_bitmap((*i)->getBitmap(), pos.x * tileSize, pos.y * tileSize,0);
+			al_draw_bitmap((*i)->getBitmap(), pos.x * tileSize, pos.y * tileSize, 0);
 
 		}
 	}
@@ -314,18 +311,61 @@ int map::getNumberOfItems()
 
 void map::evaluateItems()
 {
-	//alterar depois para ser baseado em distância da sala que o item está para outra, ao invés de uma distância em linha reta do item
-	//para o primeiro tile da sala inicial
-	score = 0;
+	score = evaluateDistance() * evaluateSpread();
+}
+
+float map::evaluateDistance()
+{
+	float tempScore = 0;
 	for each (itemSpawned* is in currentItems)
 	{
 		for each (pos2D p in is->getPositions())
 		{
-			score += findRoomFromTile(p)->getDistance() * is->getMultiplier();
-
+			tempScore += findRoomFromTile(p)->getDistance() * is->getDistanceMultiplier();
 		}
 	}
-	
+	return tempScore;
+}
+
+float map::evaluateSpread()
+{
+	float tempScore = 0;
+	for each (itemSpawned* is in currentItems)
+	{
+		tempScore += evaluateSpreadOfItem(is) * is->getDistanceMultiplier();
+	}
+	return tempScore;
+}
+
+float map::evaluateSpreadOfItem(itemSpawned* is)
+{
+	float xMed = 0;
+	float yMed = 0;
+
+	int n = 0;
+
+	std::vector<float> x;
+	std::vector<float> y;
+
+	float xSumSqrt = 0;
+	float ySumSqrt = 0;
+
+	for each (pos2D p in is->getPositions())
+	{
+		n++;
+		xMed += p.x;
+		yMed += p.y;
+		x.emplace_back(p.x);
+		y.emplace_back(p.y);
+	}
+	xMed = xMed / n;
+	yMed = yMed / n;
+	for (int i = 0; i < n; ++i)
+	{
+		xSumSqrt += (x[i] - xMed)*(x[i] - xMed);
+		ySumSqrt += (y[i] - yMed)*(y[i] - yMed);
+	}
+	return sqrt(xSumSqrt / n + ySumSqrt / n);
 }
 
 void map::resetRoomDistances()
@@ -346,44 +386,57 @@ void map::resetRoomParents()
 
 void map::checkRoomsDistancesToSpawn()
 {
-	int distance = 0;
-	std::cout << "SPAWN ROOM:" << spawnRoom << std::endl;
-	std::cout << "Rooms:" << std::endl;
-	printRoomAdresses(rooms);
+	//std::cout << "SPAWN ROOM:" << spawnRoom << std::endl;
+	//std::cout << "Rooms:" << std::endl;
+	//printRoomAdresses(rooms);
 	resetRoomParents();
 	for each (room* r in rooms)
 	{
 		if (r != spawnRoom)
 		{
 			resetRoomParents();
-			Djikstra(spawnRoom, r, distance);
-			r->setDistance(distance);
+			r->setDistance(Djikstra(spawnRoom, r).size());
 		}
 	}
 }
 
 void map::checkRoomsDistancesToMainPath()
 {
-	int dist;
 	for each (room* r in rooms)
 	{
-		for each (room* path in mainPath)
+		r->setDistance(checkRoomDistanceToMainPath(r));
+	}
+	for each (room* m in mainPath)
+	{
+		m->setDistance(0);
+	}
+}
+
+int map::checkRoomDistanceToMainPath(room * r)
+{
+	int distance = rooms.size() * 99;
+	std::list<room*> path;
+	for each (room* p in mainPath)
+	{
+		resetRoomParents();
+		path = Djikstra(r, p);
+		if (distance > path.size())
 		{
-			resetRoomParents();
-			Djikstra(r, path, dist);
-			if (r->getDistance() == -1 || r->getDistance() > dist)
-			{
-				r->setDistance(dist);
-			}
+			distance = path.size();
+		}
+		if (r == p)
+		{
+			return 0;
 		}
 	}
+	return distance;
 }
 
 void map::findMainPath()
 {
-	int a;
 	resetRoomParents();
-	mainPath = Djikstra(spawnRoom, endRoom,a);
+	mainPath = Djikstra(spawnRoom, endRoom);
+	mainPath.emplace_back(spawnRoom);
 }
 
 void map::setMainPath(std::list<room*> p)

@@ -12,6 +12,7 @@ class map
 private:
 	std::list<room*> rooms;
 	std::list<room*> mainPath;
+
 	static room* spawnRoom;
 	static room* endRoom;
 	int numberOfRooms;
@@ -31,21 +32,32 @@ public:
 
 	static void setSpawnRoom(room* newSpawnRoom);
 	static void setEndRoom(room* newEndRoom);
-	
+
+	std::list<itemSpawned*> getItemSpawneds();
+	void setItemSpawned(std::list<itemSpawned*> its);
+
+	bool hasItems();
+
 	std::list<room*> getRoomList();
 	int getNumberOfRooms();
 	int getStandardItemChance();
+	
 	void populateRooms();
 	void populateRooms(std::list<room*> setRooms);
+
 	void populateItems(std::list<item*> items, ALLEGRO_BITMAP *map);
 	void saveLargerMapWithItems(int tileSize, const char* path);
 	void spawnItem(item * it, pos2D pos);
 	int getNumberOfItems();
 	void evaluateItems();
+	float evaluateDistance();
+	float evaluateSpread();
+	float evaluateSpreadOfItem(itemSpawned* is);
 	void resetRoomDistances();
 	void resetRoomParents();
 	void checkRoomsDistancesToSpawn();
 	void checkRoomsDistancesToMainPath();
+	int checkRoomDistanceToMainPath(room* r);
 	void findMainPath();
 	void setMainPath(std::list<room*> p);
 	std::list<room*> getMainPath();

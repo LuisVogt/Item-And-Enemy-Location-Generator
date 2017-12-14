@@ -15,7 +15,8 @@ public:
 	ALLEGRO_BITMAP * getBitmap();
 	std::list<pos2D> getPositions();
 	item* getBaseItem();
-	float getMultiplier();
+	float getDistanceMultiplier();
+	float getSpreadMultiplier();
 	~itemSpawned();
 };
 

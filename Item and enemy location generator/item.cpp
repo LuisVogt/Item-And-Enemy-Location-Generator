@@ -22,7 +22,8 @@ void item::subtractNumberOfItems()
 
 void item::addNumberOfItems()
 {
-	numberOfItems++;
+	if (numberOfItems < maxNumberOfItems)
+		numberOfItems++;
 }
 
 float item::getDistanceMultiplier()
@@ -30,12 +31,19 @@ float item::getDistanceMultiplier()
 	return distanceMultiplier;
 }
 
-item::item(ALLEGRO_BITMAP * newSprite, int newSpawnChance, int numberOfItems, float newDistanceMultiplier)
+float item::getSpreadMultiplier()
+{
+	return spreadMultiplier;
+}
+
+item::item(ALLEGRO_BITMAP * newSprite, int newSpawnChance, int minNumberOfItems, int maxNumberOfItems,float newDistanceMultiplier, float newSpreadMultiplier)
 {
 	sprite = newSprite;
 	spawnChance = newSpawnChance;
-	this->numberOfItems = numberOfItems;
+	this->numberOfItems = minNumberOfItems;
+	this->maxNumberOfItems = maxNumberOfItems;
 	distanceMultiplier = newDistanceMultiplier;
+	spreadMultiplier = newSpreadMultiplier;
 }
 
 item::~item()
