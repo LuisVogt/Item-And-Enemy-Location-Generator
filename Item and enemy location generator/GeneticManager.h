@@ -11,6 +11,10 @@ private:
 	int currentGeneration;
 	int maxNumberOfGenerations;
 	std::list<map*> currentMaps;
+	std::list<room*> mapRooms;
+	ALLEGRO_BITMAP* mapBitmap;
+	std::list<room*> mainPath;
+	int numberOfMaps;
 	RandomManager* RandomMan;
 public:
 	void makeChildren(map* parentA, map* parentB);

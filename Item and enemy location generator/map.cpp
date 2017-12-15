@@ -126,13 +126,12 @@ void map::setEndRoom(room * newEndRoom)
 
 std::list<itemSpawned*> map::getItemSpawneds()
 {
-	std::cout<< "CurrentSize: "<< currentItems.size() <<std::endl; 
-	al_rest(3);
 	return currentItems;
 }
 
 void map::setItemSpawned(std::list<itemSpawned*> its)
 {
+	currentItems.clear();
 	currentItems = its;
 	evaluateItems();
 }
@@ -469,6 +468,21 @@ map::map(ALLEGRO_BITMAP * newMap, int itemChance, std::list<room*> rooms)
 	thisMap = newMap;
 	standardItemChance = itemChance;
 	this->rooms = rooms;
+}
+
+map::map(ALLEGRO_BITMAP * newMap, std::list<room*> rooms, std::list<room*> mainPath, std::list<itemSpawned*> currentItems)
+{
+	this->thisMap;
+	this->rooms = rooms;
+	this->mainPath = mainPath;
+	this->currentItems = currentItems;
+}
+
+map::map(ALLEGRO_BITMAP * newMap, std::list<room*> rooms, std::list<room*> mainPath)
+{
+	this->thisMap;
+	this->rooms = rooms;
+	this->mainPath = mainPath;
 }
 
 

@@ -102,23 +102,24 @@ int main(int argc, char **argv)
 
 
 	RandomManager Manager = RandomManager(bitmap, 70);
-	GeneticManager GeneticMan = GeneticManager(0.1f, 0.5f, 5, &Manager);
+	GeneticManager GeneticMan = GeneticManager(0.0f, 0.7f, 45, &Manager);
 
 	Manager.addItemFromFileName("beringela.png", 3, 1.0f, 1.0f);
 	Manager.addItemFromFileName("faca.png", 2, 4.0f, 5.0f);
 	Manager.addItemFromFileName("escudo.png", 1, 5.0f, 10.0f);
-	Manager.addItemFromFileName("lotus.png", 0, 20.0f, 1.0f);
+	Manager.addItemFromFileName("lotus.png", 0, 1, 20.0f, 1.0f);
 	Manager.createMaps(20);
 
 	Manager.defineNumberOfItems();
 	Manager.populateMapsWithItems();
 	Manager.calculateScores();
+	Manager.sortMaps();
 	Manager.printScores();
-	al_rest(10);
+	Manager.saveMapImages("mapasBase", "testeEmMassa");
 	GeneticMan.processAllGenerations();
 	Manager.printScores();
-	al_rest(10);
 	Manager.saveMapImages("mapas", "testeEmMassa");
+	al_rest(10);
 
 	if (!al_save_bitmap(save2, secondMap))
 	{

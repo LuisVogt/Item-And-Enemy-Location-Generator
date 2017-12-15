@@ -13,7 +13,6 @@ std::list<room*> getRoomPath(room* r);
 int getRandomNumberInRange(int begining, int end);
 float getRandomPercentage();
 float getRandomNumberInRange(float begining, float end);
-
 bool isRoomOnList(std::list<room*> l, room* r);
 void insertInOrder(std::list<room*>& rList, room* rm);
 void printRoomAdresses(std::list<room*>& rList);

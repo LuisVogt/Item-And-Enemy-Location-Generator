@@ -4,21 +4,20 @@
 
 void GeneticManager::makeChildren(map * parentA, map * parentB)
 {
-	std::cout << "Make Children" << std::endl;
-	al_rest(1);
-
 	std::list<itemSpawned*> listA;
-	std::list<itemSpawned*> listB;	
-	std::cout<< "What" <<std::endl; 
-	al_rest(2);
+	std::list<itemSpawned*> listB;
+
 	std::list<itemSpawned*> tempListA = parentA->getItemSpawneds();
 	std::list<itemSpawned*> tempListB = parentB->getItemSpawneds();
-	std::cout << "Size " << tempListA.size() << std::endl;
-	al_rest(2);
-	std::cout << "Size " << tempListB.size() << std::endl;
-	al_rest(2);
+
 	std::list<itemSpawned*>::iterator itA = tempListA.begin();
 	std::list<itemSpawned*>::iterator itB = tempListB.begin();
+
+	std::list<pos2D> tempListPos2DA;
+	std::list<pos2D> tempListPos2DB;
+
+	std::list<pos2D> nextListPos2DA;
+	std::list<pos2D> nextListPos2DB;
 
 	std::list<pos2D>::iterator itPos2DA;
 	std::list<pos2D>::iterator itPos2DB;
@@ -28,16 +27,20 @@ void GeneticManager::makeChildren(map * parentA, map * parentB)
 
 	while (itA != tempListA.end() || itB != tempListB.end())
 	{
-		std::cout << "While2" << std::endl;
-		al_rest(1);
-		itPos2DA = (*itA)->getPositions().begin();
-		itPos2DB = (*itB)->getPositions().begin();
-		listA.emplace_back((*itA));
-		listB.emplace_back((*itB));
-		while (itPos2DA != (*itA)->getPositions().end() || itPos2DB != (*itB)->getPositions().end())
+		tempListPos2DA = (*itA)->getPositions();
+		tempListPos2DB = (*itB)->getPositions();
+
+		itPos2DA = tempListPos2DA.begin();
+		itPos2DB = tempListPos2DB.begin();
+
+		listA.emplace_back(new itemSpawned((*itA)->getBaseItem()));
+		listB.emplace_back(new itemSpawned((*itA)->getBaseItem()));
+
+		nextListPos2DA.clear();
+		nextListPos2DB.clear();
+
+		while (itPos2DA != tempListPos2DA.end() || itPos2DB != tempListPos2DB.end())
 		{
-			std::cout << "While2" << std::endl;
-			al_rest(1);
 			if (getRandomPercentage() < mutationChance)
 				tempPosA = parentA->getRandomRoom()->getRandomTile();
 			else
@@ -50,6 +53,7 @@ void GeneticManager::makeChildren(map * parentA, map * parentB)
 			{
 				listA.back()->addItem(tempPosA);
 				listB.back()->addItem(tempPosB);
+
 			}
 			else
 			{
@@ -62,16 +66,14 @@ void GeneticManager::makeChildren(map * parentA, map * parentB)
 		++itA;
 		++itB;
 	}
-
 	parentA->setItemSpawned(listA);
 	parentB->setItemSpawned(listB);
+	currentMaps.emplace_back(parentA);
+	currentMaps.emplace_back(parentB);
 }
 
 void GeneticManager::processCurrentGeneration()
 {
-	std::cout << "ProcessCurrentGen" << std::endl;
-	al_rest(1);
-
 	map* tempMap1 = nullptr;
 	map* tempMap2 = nullptr;
 
@@ -79,6 +81,9 @@ void GeneticManager::processCurrentGeneration()
 
 	std::list<map*>::iterator tempIt;
 	std::list<map*>* maps = RandomMan->getMaps();
+	std::list<map*> deleteMaps;
+	int newMapSize = maps->size();
+	int currentMapSize = 0;
 
 	while (currentMaps.size() < parentPercentage * maps->size())
 	{
@@ -100,36 +105,33 @@ void GeneticManager::processCurrentGeneration()
 			tempMap2 = nullptr;
 		}
 	}
-	for each (map* m in (*maps))
+	maps->clear();
+	for each (map* m in currentMaps)
 	{
-		tempIt = std::find(currentMaps.begin(), currentMaps.end(), m);
-		if (tempIt != currentMaps.end())
-		{
-			maps->remove(m);
-		}
+		maps->emplace_back(m);
 	}
-	RandomMan->addMaps(maps->size() - currentMaps.size());
+	RandomMan->addMaps(newMapSize - currentMaps.size());
+	RandomMan->populateMapsWithItems();
+	RandomMan->calculateScores();
+	RandomMan->sortMaps();
 	currentMaps.clear();
 	currentGeneration++;
 }
 
 void GeneticManager::processAllGenerations()
 {
-	std::cout<< "Process All Gens" <<std::endl; 
-	al_rest(1);
+	mapRooms = RandomMan->getMaps()->front()->getRoomList();
+	mainPath = RandomMan->getMaps()->front()->getMainPath();
+
 	while (currentGeneration < maxNumberOfGenerations)
 	{
-		processCurrentGeneration();
-		RandomMan->populateMapsWithItems();
 		std::cout << "Processando geracao " << currentGeneration << std::endl;
+		processCurrentGeneration();
 	}
 }
 
 map * GeneticManager::selectRandomMap(std::list<map*> maps)
 {
-	std::cout<< "SelectRandomMap" <<std::endl; 
-	al_rest(1);
-
 	float combinedWeights = 0;
 	float tempWeight;
 

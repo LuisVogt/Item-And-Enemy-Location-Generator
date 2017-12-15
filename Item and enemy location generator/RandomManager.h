@@ -22,13 +22,13 @@ public:
 	void defineNumberOfItems();
 	void createMaps(int numberOfMaps);
 	void addMaps(int numberOfMaps);
+	void addMap(map* m);
 	void addItemFromFileName(const char* filePath, int spawnChance, float distanceMultiplier, float spreadMultiplier);
 	void addItemFromFileName(const char* filePath, int spawnChance, int minNumberOfItems, float distanceMultiplier, float spreadMultiplier);
 	void addItemFromFileName(const char* filePath, int spawnChance, int minNumberOfItems, int maxNumberOfItems, float distanceMultiplier, float spreadMultiplier);
 	void saveMapImages(const char* path, const char* fileName);
 	void populateMapsWithItems();
 	void checkIfAllMapsHaveTheSameAmountOfItems();
-	bool isMapASmallerThanB(map* A, map* B);
 	void sortMaps();
 	void calculateScores();
 	void printScores();

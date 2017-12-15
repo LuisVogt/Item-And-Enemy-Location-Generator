@@ -62,6 +62,7 @@ void RandomManager::defineNumberOfItems()
 
 void RandomManager::createMaps(int numberOfMaps)
 {
+	--numberOfMaps;
 	map * firstMap;
 	firstMap = new map(mapImage, chanceForItemToSpawnInARoom);
 	firstMap->populateRooms();
@@ -77,7 +78,7 @@ void RandomManager::createMaps(int numberOfMaps)
 void RandomManager::addMaps(int numberOfMaps)
 {
 	map* m;
-	for (int i = 1; i < numberOfMaps; i++)
+	for (int i = 1; i <= numberOfMaps; i++)
 	{
 		m = new map(mapImage, chanceForItemToSpawnInARoom);
 		m->populateRooms(maps.front()->getRoomList());
@@ -86,6 +87,11 @@ void RandomManager::addMaps(int numberOfMaps)
 	getMainPaths();
 	maps.front()->resetRoomDistances();
 	maps.front()->checkRoomsDistancesToMainPath();
+}
+
+void RandomManager::addMap(map * m)
+{
+	maps.emplace_back(m);
 }
 
 void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, float distanceMultiplier, float spreadMultiplier)
@@ -134,6 +140,7 @@ void RandomManager::saveMapImages(const char* path, const char* fileName)
 
 void RandomManager::populateMapsWithItems()
 {
+	int i = 0;
 	for each (map* m in maps)
 	{
 		m->populateItems(items, mapImage);
@@ -149,21 +156,17 @@ void RandomManager::checkIfAllMapsHaveTheSameAmountOfItems()
 	}
 
 }
-
-bool RandomManager::isMapASmallerThanB(map * A, map * B)
+bool isABiggerThanB(map * A, map * B)
 {
 	float scoreA = A->getScore();
 	float scoreB = B->getScore();
-	if (scoreA < scoreB)
-		return true;
-	return false;
+	return scoreA > scoreB;
+
 }
 
 void RandomManager::sortMaps()
 {
-	std::list<map*>::iterator begin = maps.begin();
-	std::list<map*>::iterator end = maps.end();
-	//std::sort(begin, end, isMapASmallerThanB);
+	maps.sort(isABiggerThanB);
 }
 
 void RandomManager::calculateScores()
