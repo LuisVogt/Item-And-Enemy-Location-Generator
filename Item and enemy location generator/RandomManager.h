@@ -19,6 +19,7 @@ private:
 public:
 	item* getRandomItem();
 	std::list<map*>* getMaps();
+	ALLEGRO_BITMAP* getMapBitMap();
 	void defineNumberOfItems();
 	void createMaps(int numberOfMaps);
 	void addMaps(int numberOfMaps);

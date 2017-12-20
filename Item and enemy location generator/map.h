@@ -62,7 +62,9 @@ public:
 	void setMainPath(std::list<room*> p);
 	std::list<room*> getMainPath();
 	float getScore();
+
 	map();
+	map(map* m);
 	map(ALLEGRO_BITMAP *newMap, int itemChance);
 	map(ALLEGRO_BITMAP *newMap, int itemChance, std::list<room*> rooms);
 	map(ALLEGRO_BITMAP *newMap, std::list<room*> rooms, std::list<room*> mainPath, std::list<itemSpawned*> currentItems);

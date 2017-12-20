@@ -34,6 +34,11 @@ std::list<map*>* RandomManager::getMaps()
 	return &maps;
 }
 
+ALLEGRO_BITMAP * RandomManager::getMapBitMap()
+{
+	return mapImage;
+}
+
 void RandomManager::defineNumberOfItems()
 {
 	bool isTotalWeightZero = true;
@@ -71,7 +76,6 @@ void RandomManager::createMaps(int numberOfMaps)
 	map::setSpawnRoom(firstMap->getRandomRoom());
 	firstMap->checkRoomsDistancesToSpawn();
 	map::setEndRoom(firstMap->getRandomRoom(firstMap->getMaxDistance() - 1));
-
 	addMaps(numberOfMaps);
 }
 

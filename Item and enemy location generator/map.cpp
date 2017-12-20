@@ -457,6 +457,17 @@ map::map()
 {
 }
 
+map::map(map * m)
+{
+	this->thisMap = m->thisMap;
+	this->rooms = rooms;
+	this->mainPath = mainPath;
+	for each (itemSpawned* iS in m->getItemSpawneds())
+	{
+		currentItems.emplace_back(new itemSpawned(iS));
+	}
+}
+
 map::map(ALLEGRO_BITMAP *newMap, int itemChance)
 {
 	thisMap = newMap;
@@ -472,7 +483,7 @@ map::map(ALLEGRO_BITMAP * newMap, int itemChance, std::list<room*> rooms)
 
 map::map(ALLEGRO_BITMAP * newMap, std::list<room*> rooms, std::list<room*> mainPath, std::list<itemSpawned*> currentItems)
 {
-	this->thisMap;
+	this->thisMap = newMap;
 	this->rooms = rooms;
 	this->mainPath = mainPath;
 	this->currentItems = currentItems;
