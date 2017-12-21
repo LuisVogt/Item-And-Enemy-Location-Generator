@@ -30,6 +30,9 @@ public:
 	std::list<room*> getRoomsInRangeFromSpawn(int minDistance);
 	int getMaxDistance();
 
+	pos2D getRandomTileWithoutItems();
+	bool isThereItemInPos(pos2D pos);
+
 	static void setSpawnRoom(room* newSpawnRoom);
 	static void setEndRoom(room* newEndRoom);
 

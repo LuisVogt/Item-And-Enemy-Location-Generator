@@ -23,6 +23,27 @@ void itemSpawned::addItem(pos2D pos)
 	itemPos.emplace_back(pos);
 }
 
+void itemSpawned::swapItem(pos2D previous, pos2D next)
+{
+	std::list<pos2D>::iterator it = std::find(itemPos.begin(), itemPos.end(), previous);
+	itemPos.emplace(it, next);
+	it = std::find(itemPos.begin(), itemPos.end(), previous);
+	itemPos.erase(it);
+}
+
+void itemSpawned::removeItem(pos2D pos)
+{
+	itemPos.remove(pos);
+}
+
+bool itemSpawned::isThereItemInPos(pos2D pos)
+{
+	std::list<pos2D>::iterator it = std::find(itemPos.begin(), itemPos.end(), pos);
+	if (it != itemPos.end())
+		return true;
+	return false;
+}
+
 ALLEGRO_BITMAP * itemSpawned::getBitmap()
 {
 	return baseItem->getBitmap();

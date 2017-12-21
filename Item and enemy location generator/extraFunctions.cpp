@@ -12,7 +12,7 @@ bool areTwoColorsTheSame(ALLEGRO_COLOR first, ALLEGRO_COLOR second)
 	unsigned char secondR;
 	unsigned char secondG;
 	unsigned char secondB;
-	al_unmap_rgb(first,  &firstR,  &firstG,  &firstB);
+	al_unmap_rgb(first, &firstR, &firstG, &firstB);
 	al_unmap_rgb(second, &secondR, &secondG, &secondB);
 	bool r = firstR == secondR;
 	bool g = firstG == secondG;
@@ -50,7 +50,7 @@ int getDistanceToFirstRoom(room* r)
 			++distancia;
 			if (distancia > 100)
 			{
-				std::cout << "Agarrou em:" << temp << " e " << temp->getParent()<<std::endl;
+				std::cout << "Agarrou em:" << temp << " e " << temp->getParent() << std::endl;
 				printAdjRooms(temp);
 				printAdjRooms(temp->getParent());
 			}
@@ -77,7 +77,7 @@ std::list<room*> Djikstra(room * init, room * end)
 		tempRoom = open.front();
 		open.pop_front();
 		closed.emplace_back(tempRoom);
-		
+
 		if (tempRoom == end)
 		{
 			path = getRoomPath(end);
@@ -95,12 +95,12 @@ std::list<room*> Djikstra(room * init, room * end)
 		{
 			if (isRoomOnList(closed, r))
 				continue;
-			if (tempDistance + 1 < getDistanceToFirstRoom(r) 
-				|| !isRoomOnList(open,r))
+			if (tempDistance + 1 < getDistanceToFirstRoom(r)
+				|| !isRoomOnList(open, r))
 			{
 				r->setParent(tempRoom);
 				if (!isRoomOnList(open, r))
-					insertInOrder(open,r);
+					insertInOrder(open, r);
 			}
 		}
 	}
@@ -115,17 +115,16 @@ std::list<room*> getRoomPath(room * r)
 	{
 		roomPath.emplace_front(room);
 		room = room->getParent();
-	}	
+	}
 	return roomPath;
 }
 
-int getRandomNumberInRange(int begining, int end)
+int getRandomNumberInRange(int begining,int end)
 {
 	std::random_device rd;
-	std::mt19937 eng(rd());
+	//std::mt19937 eng(rd());
 	std::uniform_int_distribution<> roomRandom(begining, end);
-
-	return roomRandom(eng);
+	return roomRandom(rd);
 }
 
 float getRandomPercentage()
@@ -142,7 +141,6 @@ float getRandomNumberInRange(float begining, float end)
 	std::random_device rd;
 	std::mt19937 eng(rd());
 	std::uniform_real_distribution<> randomNumber(begining, end);
-
 	return randomNumber(eng);
 }
 

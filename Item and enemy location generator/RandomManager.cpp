@@ -50,14 +50,18 @@ void RandomManager::defineNumberOfItems()
 	if (isTotalWeightZero)
 		return;
 	int numberOfRooms = maps.front()->getNumberOfRooms();
+
 	std::random_device rd;
 	std::mt19937 eng(rd());
 	std::uniform_int_distribution<> roomRandom(1, 100);
-	int roomChance = 0;
-	for (int i = 0; i < numberOfRooms; i++)
-	{
-		roomChance = roomRandom(eng);
 
+	float extraPercentage = (float)chanceForItemToSpawnInARoom / 100.0f;
+	std::cout << "Extra: " << extraPercentage << std::endl;
+	int roomChance = 0;
+	for (int i = 0; i < numberOfRooms*extraPercentage; i++)
+	{
+		std::cout << "i: " << i << std::endl;
+		roomChance = roomRandom(eng);
 		if (roomChance <= chanceForItemToSpawnInARoom)
 		{
 			getRandomItem()->addNumberOfItems();

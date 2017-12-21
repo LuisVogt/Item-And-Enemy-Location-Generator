@@ -98,12 +98,10 @@ void room::changeItemChance(int changeValue)
 
 pos2D room::getRandomTile()
 {
-	std::random_device rd;
-	std::mt19937 eng(rd());
-	std::uniform_int_distribution<> dist(0, tilePos.size()-1);
+	int n = getRandomNumberInRange(0, tilePos.size() - 1);
 	std::list<pos2D>::iterator it;
 	it = tilePos.begin();
-	for (int i = 0; i < dist(eng); i++)
+	for (int i = 0; i < n; i++)
 	{
 		++it;
 	}

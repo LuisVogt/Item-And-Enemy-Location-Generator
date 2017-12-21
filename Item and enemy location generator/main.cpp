@@ -69,6 +69,8 @@ void readMap()
 
 int main(int argc, char **argv)
 {
+	getRandomNumberInRange(0, 5);
+	getRandomNumberInRange(0, 6);
 	if (!al_init()) {
 		fprintf(stderr, "failed to initialize allegro!\n");
 		return -1;
@@ -102,12 +104,12 @@ int main(int argc, char **argv)
 
 
 	RandomManager Manager = RandomManager(bitmap, 70);
-	GeneticManager GeneticMan = GeneticManager(0.0f, 0.5f, 100, 2, &Manager);
+	GeneticManager GeneticMan = GeneticManager(0.1f, 0.5f, 30, 5, &Manager, 0.1f, 5);
 
-	Manager.addItemFromFileName("beringela.png", 3, 1.0f, 1.0f);
-	Manager.addItemFromFileName("faca.png", 2, 4.0f, 5.0f);
+	Manager.addItemFromFileName("beringela.png", 3, 1.0f, 5.0f);
+	Manager.addItemFromFileName("faca.png", 2, 4.0f, 10.0f);
 	Manager.addItemFromFileName("escudo.png", 1, 5.0f, 10.0f);
-	Manager.addItemFromFileName("lotus.png", 0, 1, 20.0f, 1.0f);
+	Manager.addItemFromFileName("lotus.png", 0, 1, 20.0f, 100.0f);
 	Manager.createMaps(20);
 
 	Manager.defineNumberOfItems();

@@ -53,8 +53,7 @@ room * map::findRoomFromTile(pos2D tile)
 
 room * map::getRandomRoom()
 {
-	int randomNumber = getRandomNumberInRange(1, numberOfRooms);
-
+	int randomNumber = getRandomNumberInRange(1, rooms.size());
 	for (std::list<room*>::iterator i = rooms.begin(); i != rooms.end(); ++i)
 	{
 		randomNumber--;
@@ -112,6 +111,24 @@ int map::getMaxDistance()
 		}
 	}
 	return distance;
+}
+
+pos2D map::getRandomTileWithoutItems()
+{
+	pos2D tile = getRandomRoom()->getRandomTile();
+	while (isThereItemInPos(tile))
+		tile = getRandomRoom()->getRandomTile();
+	return tile;
+}
+
+bool map::isThereItemInPos(pos2D pos)
+{
+	for each (itemSpawned* is in currentItems)
+	{
+		if (is->isThereItemInPos(pos))
+			return true;
+	}
+	return false;
 }
 
 void map::setSpawnRoom(room * newSpawnRoom)
@@ -223,15 +240,15 @@ void map::populateItems(std::list<item*> items, ALLEGRO_BITMAP *map)
 	{
 		return;
 	}
-	room* randomRoom;
+	//room* randomRoom;
 	int tempNumberOfItems = 0;
 	for each (item* i in items)
 	{
 		tempNumberOfItems = i->getNumberOfItems();
 		while (tempNumberOfItems > 0)
 		{
-			randomRoom = getRandomRoom();
-			spawnItem(i, randomRoom->getRandomTile());
+			//randomRoom = getRandomRoom();
+			spawnItem(i, getRandomTileWithoutItems());
 			tempNumberOfItems--;
 		}
 	}
@@ -310,7 +327,8 @@ int map::getNumberOfItems()
 
 void map::evaluateItems()
 {
-	score = evaluateDistance() * evaluateSpread();
+	//std::cout << score << "----" << evaluateDistance() << " + " << evaluateSpread() << std::endl;
+	score = evaluateDistance() + evaluateSpread();
 }
 
 float map::evaluateDistance()
