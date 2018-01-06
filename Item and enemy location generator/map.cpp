@@ -382,7 +382,7 @@ float map::evaluateSpreadOfItem(itemSpawned* is)
 		xSumSqrt += (x[i] - xMed)*(x[i] - xMed);
 		ySumSqrt += (y[i] - yMed)*(y[i] - yMed);
 	}
-	return sqrt(xSumSqrt / n + ySumSqrt / n);
+	return sqrt(xSumSqrt / n) + sqrt(ySumSqrt / n);
 }
 
 void map::resetRoomDistances()
@@ -517,4 +517,7 @@ map::map(ALLEGRO_BITMAP * newMap, std::list<room*> rooms, std::list<room*> mainP
 
 map::~map()
 {
+	rooms.clear();
+	mainPath.clear();
+	currentItems.clear();
 }

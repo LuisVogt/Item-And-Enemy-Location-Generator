@@ -74,6 +74,12 @@ void GeneticManager::makeChildren(map * parentA, map * parentB)
 
 void GeneticManager::makeChildren(map * parentA, map * parentB, std::list<int> cutOffPoints)
 {
+	if (parentA == parentB)
+	{
+		std::cout << "Why are you the same though" << std::endl;
+		std::cout << '\a' << std::endl;
+		al_rest(2);
+	}
 	std::list<itemSpawned*> listA;
 	std::list<itemSpawned*> listB;
 
@@ -193,7 +199,6 @@ void GeneticManager::processCurrentGeneration()
 	tempIt = maps->begin();
 
 	std::cout << "Sizes:" << newMapSize << " / " << size << std::endl;
-
 	for (int i = 0; i < size; i++)
 	{
 		currentMaps.emplace_back(new map((*tempIt)));
@@ -215,7 +220,8 @@ void GeneticManager::processCurrentGeneration()
 		if (tempMap1 != nullptr && tempMap2 != nullptr)
 		{
 			makeChildren(tempMap1, tempMap2, cutOffs);
-
+			delete(tempMap1);
+			delete(tempMap2);
 			tempMap1 = nullptr;
 			tempMap2 = nullptr;
 		}

@@ -103,8 +103,8 @@ int main(int argc, char **argv)
 
 
 
-	RandomManager Manager = RandomManager(bitmap, 70);
-	GeneticManager GeneticMan = GeneticManager(0.1f, 0.5f, 30, 5, &Manager, 0.1f, 5);
+	RandomManager Manager = RandomManager(bitmap, 300);
+	GeneticManager GeneticMan = GeneticManager(0.1f, 0.5f, 500, 5, &Manager, 0.1f, 5);
 
 	Manager.addItemFromFileName("beringela.png", 3, 1.0f, 5.0f);
 	Manager.addItemFromFileName("faca.png", 2, 4.0f, 10.0f);

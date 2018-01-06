@@ -10,25 +10,25 @@
 class map
 {
 private:
-	std::list<room*> rooms;
-	std::list<room*> mainPath;
+	std::list<room*> rooms; //make static
+	std::list<room*> mainPath; //make static
 
 	static room* spawnRoom;
 	static room* endRoom;
-	int numberOfRooms;
+	int numberOfRooms; //make static
 	ALLEGRO_BITMAP *thisMap;
 	ALLEGRO_BITMAP *biggerMap;
 	std::list<itemSpawned*> currentItems;
-	int standardItemChance;
+	int standardItemChance; //remove
 	float score;
 public:
 	void drawRooms(ALLEGRO_BITMAP *drawMap);
 	void drawRoomsWithRandomColors(ALLEGRO_BITMAP *drawMap);
 	room* findRoomFromTile(pos2D tile);
-	room* getRandomRoom();
-	room* getRandomRoom(int minDistance);
-	std::list<room*> getRoomsInRangeFromSpawn(int minDistance);
-	int getMaxDistance();
+	room* getRandomRoom(); //make static
+	room* getRandomRoom(int minDistance); //make static
+	std::list<room*> getRoomsInRangeFromSpawn(int minDistance); //make static
+	int getMaxDistance(); 
 
 	pos2D getRandomTileWithoutItems();
 	bool isThereItemInPos(pos2D pos);
@@ -41,12 +41,12 @@ public:
 
 	bool hasItems();
 
-	std::list<room*> getRoomList();
-	int getNumberOfRooms();
-	int getStandardItemChance();
+	std::list<room*> getRoomList(); //make static/delete
+	int getNumberOfRooms(); //make static/delete
+	int getStandardItemChance(); //remove
 	
-	void populateRooms();
-	void populateRooms(std::list<room*> setRooms);
+	void populateRooms(); //make static
+	void populateRooms(std::list<room*> setRooms); //remove
 
 	void populateItems(std::list<item*> items, ALLEGRO_BITMAP *map);
 	void saveLargerMapWithItems(int tileSize, const char* path);
@@ -56,14 +56,14 @@ public:
 	float evaluateDistance();
 	float evaluateSpread();
 	float evaluateSpreadOfItem(itemSpawned* is);
-	void resetRoomDistances();
+	void resetRoomDistances(); 
 	void resetRoomParents();
-	void checkRoomsDistancesToSpawn();
-	void checkRoomsDistancesToMainPath();
-	int checkRoomDistanceToMainPath(room* r);
-	void findMainPath();
-	void setMainPath(std::list<room*> p);
-	std::list<room*> getMainPath();
+	void checkRoomsDistancesToSpawn(); //make static
+	void checkRoomsDistancesToMainPath(); //make static
+	int checkRoomDistanceToMainPath(room* r); //make static
+	void findMainPath(); //make static
+	void setMainPath(std::list<room*> p); //remove	
+	std::list<room*> getMainPath(); //????
 	float getScore();
 
 	map();
