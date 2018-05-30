@@ -12,16 +12,16 @@ private:
 	float biggestScoreFromPreviousGen;
 	int currentGeneration;
 	int maxNumberOfGenerations;
-	std::list<map*> currentMaps;
-	std::list<room*> mapRooms;
+	std::list<map*> currentMaps;//<-
+	std::list<room*> mapRooms;//<-
 	ALLEGRO_BITMAP* mapBitmap;
-	std::list<room*> mainPath;
+	std::list<room*> mainPath;//<-
 	int numberOfMaps;
 	int numberOfCutOffs;
 	float criticalThreshold;
 	int generationsBellowThreshold;
 	int numberOfGenerationsToIncreaseMutation;
-	RandomManager* RandomMan;
+	RandomManager* RandomMan;//<-
 public:
 	void makeChildren(map* parentA, map* parentB);
 	void makeChildren(map* parentA, map* parentB, std::list<int> cutOffPoints);

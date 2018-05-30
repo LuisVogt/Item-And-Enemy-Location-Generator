@@ -22,6 +22,7 @@ public:
 	item* getBaseItem();
 	float getDistanceMultiplier();
 	float getSpreadMultiplier();
+	float getRoomSpreadMultiplier();
 	~itemSpawned();
 };
 

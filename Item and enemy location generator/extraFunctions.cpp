@@ -119,8 +119,10 @@ std::list<room*> getRoomPath(room * r)
 	return roomPath;
 }
 
-int getRandomNumberInRange(int begining,int end)
+int getRandomNumberInRange(int begining, int end)
 {
+	if (end < begining)
+		return begining;
 	std::random_device rd;
 	//std::mt19937 eng(rd());
 	std::uniform_int_distribution<> roomRandom(begining, end);

@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access">
+  <Class Name="GeneticManager" Collapsed="true">
+    <Position X="5.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAEAAAgBAAECEACCQAoAAwCAAAAAACCIFGMEAAA=</HashCode>
+      <FileName>GeneticManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="item">
+    <Position X="10.5" Y="1.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAAAAAAAQCAgAQAAIAIAjAAgAAAIAAAAAAACAk=</HashCode>
+      <FileName>item.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="itemSpawned">
+    <Position X="8.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAIJAAAgAAAwAEAACBAoAKAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>itemSpawned.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="map" Collapsed="true">
+    <Position X="5.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>kgBmEBABBIFAQAAAACIIwEAAALBI3CGAQiABBAAAAAg=</HashCode>
+      <FileName>map.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="RandomManager" Collapsed="true">
+    <Position X="7" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAQkEgBACAgAAAAABiMCBAEEAAAEAAAAEAAQQAAAAA=</HashCode>
+      <FileName>RandomManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="room" Collapsed="true">
+    <Position X="6.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAQAACAEAAAQABIABAIEAAZEACAJJEBgAEChApCAAA=</HashCode>
+      <FileName>room.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="pos2D" Collapsed="true">
+    <Position X="5.25" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AGAAAAAAAAAAAgAAAAAAASAAAAICAAAgAABgAAQAAAA=</HashCode>
+      <FileName>structs.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

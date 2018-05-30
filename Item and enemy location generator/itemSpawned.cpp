@@ -74,6 +74,11 @@ float itemSpawned::getSpreadMultiplier()
 	return baseItem->getSpreadMultiplier();
 }
 
+float itemSpawned::getRoomSpreadMultiplier()
+{
+	return baseItem->getRoomSpreadMultiplier();
+}
+
 
 itemSpawned::~itemSpawned()
 {

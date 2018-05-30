@@ -150,8 +150,10 @@ void GeneticManager::makeChildren(map * parentA, map * parentB, std::list<int> c
 	}
 	processMutation(listA, cutOffB, parentA);
 	processMutation(listB, cutOffB, parentA);
-	currentMaps.emplace_back(new map(RandomMan->getMapBitMap(), mapRooms, mainPath, listA));
-	currentMaps.emplace_back(new map(RandomMan->getMapBitMap(), mapRooms, mainPath, listB));
+	currentMaps.emplace_back(new map(listA));
+	currentMaps.emplace_back(new map(listB));
+	//currentMaps.emplace_back(new map(RandomMan->getMapBitMap(), mapRooms, mainPath, listA));
+	//currentMaps.emplace_back(new map(RandomMan->getMapBitMap(), mapRooms, mainPath, listB));
 	//print4itemPositions(parentA->getItemSpawneds(), parentB->getItemSpawneds(), listA, listB);
 }
 
@@ -160,6 +162,7 @@ std::list<int> GeneticManager::calculateCutOffPoints(itemSpawned * exemple)
 	std::list<int> result;
 	std::list<int>::iterator it = result.begin();
 	int n = exemple->getItemCount();
+	std::cout<< "Excuse-me 1" <<std::endl; 
 	int tempRandom = getRandomNumberInRange(1, n);
 	bool test;
 	for (int i = 0; i < numberOfCutOffs; ++i)
@@ -167,6 +170,7 @@ std::list<int> GeneticManager::calculateCutOffPoints(itemSpawned * exemple)
 		tempRandom = getRandomNumberInRange(1, n);
 		result.emplace_back(tempRandom);
 	}
+	std::cout<< "Excuse-me 2" <<std::endl; 
 	result.sort();
 	for each (int i in result)
 	{
@@ -202,7 +206,6 @@ void GeneticManager::processCurrentGeneration()
 	for (int i = 0; i < size; i++)
 	{
 		currentMaps.emplace_back(new map((*tempIt)));
-		currentMaps.back()->populateRooms(mapRooms);
 		++tempIt;
 	}
 	while (currentMaps.size() < newMapSize)
@@ -230,7 +233,6 @@ void GeneticManager::processCurrentGeneration()
 	for each (map* m in currentMaps)
 	{
 		maps->emplace_back(m);
-		maps->back()->setMainPath(mainPath);
 	}
 	RandomMan->populateMapsWithItems();
 	RandomMan->calculateScores();
@@ -243,6 +245,8 @@ void GeneticManager::processCurrentGeneration()
 void GeneticManager::processAllGenerations()
 {
 	mapRooms = RandomMan->getMaps()->front()->getRoomList();
+	mapRooms = map::getRoomList();
+	mainPath = map::getMainPath();
 	mainPath = RandomMan->getMaps()->front()->getMainPath();
 	while (currentGeneration < maxNumberOfGenerations)
 	{

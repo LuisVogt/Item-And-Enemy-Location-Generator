@@ -60,7 +60,6 @@ void RandomManager::defineNumberOfItems()
 	int roomChance = 0;
 	for (int i = 0; i < numberOfRooms*extraPercentage; i++)
 	{
-		std::cout << "i: " << i << std::endl;
 		roomChance = roomRandom(eng);
 		if (roomChance <= chanceForItemToSpawnInARoom)
 		{
@@ -74,12 +73,12 @@ void RandomManager::createMaps(int numberOfMaps)
 	--numberOfMaps;
 	map * firstMap;
 	firstMap = new map(mapImage, chanceForItemToSpawnInARoom);
-	firstMap->populateRooms();
+	map::populateRooms();
 	maps.emplace_back(firstMap);
 	map * m;
-	map::setSpawnRoom(firstMap->getRandomRoom());
-	firstMap->checkRoomsDistancesToSpawn();
-	map::setEndRoom(firstMap->getRandomRoom(firstMap->getMaxDistance() - 1));
+	map::setSpawnRoom(map::getRandomRoom());
+	map::checkRoomsDistancesToSpawn();
+	map::setEndRoom(map::getRandomRoom(map::getMaxDistance() - 1));
 	addMaps(numberOfMaps);
 }
 
@@ -89,12 +88,11 @@ void RandomManager::addMaps(int numberOfMaps)
 	for (int i = 1; i <= numberOfMaps; i++)
 	{
 		m = new map(mapImage, chanceForItemToSpawnInARoom);
-		m->populateRooms(maps.front()->getRoomList());
 		maps.emplace_back(m);
 	}
-	getMainPaths();
-	maps.front()->resetRoomDistances();
-	maps.front()->checkRoomsDistancesToMainPath();
+	map::findMainPath();
+	map::resetRoomDistances();
+	map::checkRoomsDistancesToMainPath();
 }
 
 void RandomManager::addMap(map * m)
@@ -102,25 +100,25 @@ void RandomManager::addMap(map * m)
 	maps.emplace_back(m);
 }
 
-void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, float distanceMultiplier, float spreadMultiplier)
+void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, float distanceMultiplier, float spreadMultiplier, float roomSpreadMultiplier)
 {
 	ALLEGRO_PATH *path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
 	al_set_path_filename(path, filePath);
-	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, 0, 99999, distanceMultiplier, spreadMultiplier));
+	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, 0, 99999, distanceMultiplier, spreadMultiplier,roomSpreadMultiplier));
 }
 
-void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, int minNumberOfItems, float distanceMultiplier, float spreadMultiplier)
+void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, int minNumberOfItems, float distanceMultiplier, float spreadMultiplier, float roomSpreadMultiplier)
 {
 	ALLEGRO_PATH *path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
 	al_set_path_filename(path, filePath);
-	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, minNumberOfItems, 99999, distanceMultiplier, spreadMultiplier));
+	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, minNumberOfItems, 99999, distanceMultiplier, spreadMultiplier, roomSpreadMultiplier));
 }
 
-void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, int minNumberOfItems, int maxNumberOfItems, float distanceMultiplier, float spreadMultiplier)
+void RandomManager::addItemFromFileName(const char * filePath, int spawnChance, int minNumberOfItems, int maxNumberOfItems, float distanceMultiplier, float spreadMultiplier, float roomSpreadMultiplier)
 {
 	ALLEGRO_PATH *path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
 	al_set_path_filename(path, filePath);
-	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, minNumberOfItems, maxNumberOfItems, distanceMultiplier, spreadMultiplier));
+	items.emplace_back(new item(al_load_bitmap(al_path_cstr(path, '/')), spawnChance, minNumberOfItems, maxNumberOfItems, distanceMultiplier, spreadMultiplier, roomSpreadMultiplier));
 }
 
 void RandomManager::saveMapImages(const char* path, const char* fileName)
@@ -142,6 +140,58 @@ void RandomManager::saveMapImages(const char* path, const char* fileName)
 		strPath += std::to_string(m->getScore());
 		strPath += ".png";
 		m->saveLargerMapWithItems(48, strPath.c_str());
+		++i;
+	}
+}
+
+void RandomManager::saveMapImages(const char * path, const char * fileName, int n)
+{
+	std::string command = "del /Q ";
+	std::string deletePath = path;
+	deletePath += "\\*.png";
+	system(command.append(path).c_str());
+	int i = 1;
+	std::string strPath;
+	std::list<map*>::iterator begin;
+	std::list<map*>::iterator end = maps.end();
+
+	for(std::list<map*>::iterator m = maps.begin(); m!= maps.end() || i<=n ; ++m)
+	{
+		std::cout << "Saving map " << i << std::endl;
+		strPath = path;
+		strPath += "/";
+		strPath += fileName;
+		strPath += std::to_string(i);
+		strPath += " - Score ";
+		strPath += std::to_string((*m)->getScore());
+		strPath += ".png";
+		(*m)->saveLargerMapWithItems(48, strPath.c_str());
+		++i;
+	}
+}
+
+void RandomManager::saveItemImages(const char * path, const char * fileName, int n)
+{
+	std::string command = "del /Q ";
+	std::string deletePath = path;
+	deletePath += "\\*.png";
+	system(command.append(path).c_str());
+	int i = 1;
+	std::string strPath;
+	std::list<map*>::iterator begin;
+	std::list<map*>::iterator end = maps.end();
+
+	for (std::list<map*>::iterator m = maps.begin(); m != maps.end() || i <= n; ++m)
+	{
+		std::cout << "Saving map " << i << std::endl;
+		strPath = path;
+		strPath += "/";
+		strPath += fileName;
+		strPath += std::to_string(i);
+		strPath += " - Score ";
+		strPath += std::to_string((*m)->getScore());
+		strPath += ".png";
+		(*m)->saveItemMap(strPath.c_str());
 		++i;
 	}
 }
@@ -191,15 +241,6 @@ void RandomManager::printScores()
 	for each (map* m in maps)
 	{
 		std::cout << "Score do mapa " << n++ << ":" << m->getScore() << std::endl;
-	}
-}
-
-void RandomManager::getMainPaths()
-{
-	maps.front()->findMainPath();
-	for each (map* m in maps)
-	{
-		m->setMainPath(maps.front()->getMainPath());
 	}
 }
 

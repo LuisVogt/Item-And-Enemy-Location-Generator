@@ -7,6 +7,16 @@
 
 room* map::spawnRoom = nullptr;
 room* map::endRoom = nullptr;
+int map::numberOfRooms = 0;
+int map::standardItemChance = 0;
+std::list<room*> map::mainPath = std::list<room*>();
+std::list<room*> map::rooms = std::list<room*>();
+ALLEGRO_BITMAP * map::thisMap = nullptr;
+
+void map::setBitmap(ALLEGRO_BITMAP * m)
+{
+	thisMap = m;
+}
 
 void map::drawRooms(ALLEGRO_BITMAP *drawMap)
 {
@@ -53,16 +63,18 @@ room * map::findRoomFromTile(pos2D tile)
 
 room * map::getRandomRoom()
 {
-	int randomNumber = getRandomNumberInRange(1, rooms.size());
-	for (std::list<room*>::iterator i = rooms.begin(); i != rooms.end(); ++i)
+	int randomNumber = getRandomNumberInRange(1, map::rooms.size());
+	for (std::list<room*>::iterator i = map::rooms.begin(); i != map::rooms.end();)
 	{
 		randomNumber--;
 		if (randomNumber <= 0)
 		{
-			return (*i);
+			return (*i++);
 		}
+		else
+			++i;
 	}
-
+	std::cout<< "Erro: Número aleatório fora do tamanho da lista de salas" <<std::endl; 
 	return nullptr;
 }
 
@@ -115,9 +127,13 @@ int map::getMaxDistance()
 
 pos2D map::getRandomTileWithoutItems()
 {
-	pos2D tile = getRandomRoom()->getRandomTile();
+	room * r = map::getRandomRoom();
+	pos2D tile = r->getRandomTile();
 	while (isThereItemInPos(tile))
-		tile = getRandomRoom()->getRandomTile();
+	{
+		r = map::getRandomRoom();
+		tile = r->getRandomTile();
+	}
 	return tile;
 }
 
@@ -208,14 +224,15 @@ void map::populateRooms()
 							numberOfRooms++;
 							tempRoom1 = new room(map, tempTile1, standardItemChance);
 							tempRoom1->findFullRoom(map);
-							rooms.emplace_back(tempRoom1);
+							map::rooms.emplace_back(tempRoom1);
 						}
 						if (tempRoom2 == nullptr)
 						{
 							numberOfRooms++;
 							tempRoom2 = new room(map, tempTile2, standardItemChance);
 							tempRoom2->findFullRoom(map);
-							rooms.emplace_back(tempRoom2);
+
+							map::rooms.emplace_back(tempRoom2);
 						}
 						if (!tempRoom1->isRoomAdjacent(tempRoom2))
 							tempRoom1->addAdjRoom(tempRoom2);
@@ -228,11 +245,11 @@ void map::populateRooms()
 	}
 }
 
-void map::populateRooms(std::list<room*> setRooms)
+/*void map::populateRooms(std::list<room*> setRooms)
 {
 	rooms = setRooms;
 	numberOfRooms = rooms.size();
-}
+}*/
 
 void map::populateItems(std::list<item*> items, ALLEGRO_BITMAP *map)
 {
@@ -301,6 +318,48 @@ void map::saveLargerMapWithItems(int tileSize, const char* path)
 	al_destroy_bitmap(biggerMap);
 }
 
+void map::saveItemMap(const char * path)
+{
+	int r = 255;
+	int g = 255;
+	int b = 255;
+	int width = al_get_bitmap_width(thisMap);
+	int height = al_get_bitmap_height(thisMap);
+
+	ALLEGRO_BITMAP * tempMap = al_create_bitmap(width, height);
+	al_set_target_bitmap(tempMap);
+	al_draw_filled_rectangle(0, 0, width, height, al_map_rgb(0, 0, 0));
+	for each (itemSpawned* i in currentItems)
+	{
+		for each (pos2D p in i->getPositions())
+		{
+			al_draw_pixel(p.x, p.y, al_map_rgb(r, g, b));
+		}
+		r--;
+		if (r < 0)
+		{
+			r = 255;
+			g--;
+		}
+		if (g < 0)
+		{
+			g = 255;
+			b--;
+		}
+		if (b > 255)
+		{
+			fprintf(stderr, "Erro! O programa só suporta até 16581375 itens diferentes!\n");
+			return;
+		}
+	}
+	if (!al_save_bitmap(path, tempMap))
+	{
+		fprintf(stderr, "failed to save image!\n");
+		return;
+	}
+	al_destroy_bitmap(tempMap);
+}
+
 void map::spawnItem(item * it, pos2D pos)
 {
 	for each (itemSpawned* iter in currentItems)
@@ -328,7 +387,11 @@ int map::getNumberOfItems()
 void map::evaluateItems()
 {
 	//std::cout << score << "----" << evaluateDistance() << " + " << evaluateSpread() << std::endl;
-	score = evaluateDistance() + evaluateSpread();
+	score = evaluateDistance() + evaluateSpread() + evaluateRoomSpread();
+	if (score < 0.0f)
+	{
+		score = 0.0f;
+	}
 }
 
 float map::evaluateDistance()
@@ -352,6 +415,34 @@ float map::evaluateSpread()
 		tempScore += evaluateSpreadOfItem(is) * is->getDistanceMultiplier();
 	}
 	return tempScore;
+}
+
+float map::evaluateRoomSpread()
+{
+	float totalScore = 0;
+	float roomItemScore = (1000 / numberOfRooms) / currentItems.size();
+	float roomItemScoreTemp;
+	bool over;
+	for each (room* r in rooms)
+	{
+		for each (itemSpawned* is in currentItems)
+		{
+			roomItemScoreTemp = roomItemScore;
+			over = false;
+			for each (pos2D p in is->getPositions())
+			{
+				if (r->isTilePartOfRoom(p))
+				{
+					if (over)
+						roomItemScoreTemp = roomItemScoreTemp * is->getRoomSpreadMultiplier();
+					else
+						over = true;
+				}
+			}
+			totalScore += roomItemScoreTemp;
+		}
+	}
+	return totalScore;
 }
 
 float map::evaluateSpreadOfItem(itemSpawned* is)
@@ -456,10 +547,10 @@ void map::findMainPath()
 	mainPath.emplace_back(spawnRoom);
 }
 
-void map::setMainPath(std::list<room*> p)
+/*void map::setMainPath(std::list<room*> p)
 {
 	mainPath = p;
-}
+}*/
 
 std::list<room*> map::getMainPath()
 {
@@ -486,6 +577,11 @@ map::map(map * m)
 	}
 }
 
+map::map(std::list<itemSpawned*> currentItems)
+{
+	this->currentItems = currentItems;
+}
+
 map::map(ALLEGRO_BITMAP *newMap, int itemChance)
 {
 	thisMap = newMap;
@@ -495,7 +591,7 @@ map::map(ALLEGRO_BITMAP *newMap, int itemChance)
 map::map(ALLEGRO_BITMAP * newMap, int itemChance, std::list<room*> rooms)
 {
 	thisMap = newMap;
-	standardItemChance = itemChance;
+	//standardItemChance = itemChance;
 	this->rooms = rooms;
 }
 
@@ -517,7 +613,5 @@ map::map(ALLEGRO_BITMAP * newMap, std::list<room*> rooms, std::list<room*> mainP
 
 map::~map()
 {
-	rooms.clear();
-	mainPath.clear();
 	currentItems.clear();
 }

@@ -10,25 +10,26 @@
 class map
 {
 private:
-	std::list<room*> rooms; //make static
-	std::list<room*> mainPath; //make static
+	static std::list<room*> rooms; 
+	static std::list<room*> mainPath; 
 
 	static room* spawnRoom;
 	static room* endRoom;
-	int numberOfRooms; //make static
-	ALLEGRO_BITMAP *thisMap;
+	static int numberOfRooms; 
+	static ALLEGRO_BITMAP *thisMap;
 	ALLEGRO_BITMAP *biggerMap;
 	std::list<itemSpawned*> currentItems;
-	int standardItemChance; //remove
+	static int standardItemChance;
 	float score;
 public:
+	static void setBitmap(ALLEGRO_BITMAP* m);
 	void drawRooms(ALLEGRO_BITMAP *drawMap);
 	void drawRoomsWithRandomColors(ALLEGRO_BITMAP *drawMap);
-	room* findRoomFromTile(pos2D tile);
-	room* getRandomRoom(); //make static
-	room* getRandomRoom(int minDistance); //make static
-	std::list<room*> getRoomsInRangeFromSpawn(int minDistance); //make static
-	int getMaxDistance(); 
+	static room* findRoomFromTile(pos2D tile);
+	static room* getRandomRoom();
+	static room* getRandomRoom(int minDistance); 
+	static std::list<room*> getRoomsInRangeFromSpawn(int minDistance); 
+	static int getMaxDistance(); 
 
 	pos2D getRandomTileWithoutItems();
 	bool isThereItemInPos(pos2D pos);
@@ -41,33 +42,33 @@ public:
 
 	bool hasItems();
 
-	std::list<room*> getRoomList(); //make static/delete
-	int getNumberOfRooms(); //make static/delete
-	int getStandardItemChance(); //remove
-	
-	void populateRooms(); //make static
-	void populateRooms(std::list<room*> setRooms); //remove
+	static std::list<room*> getRoomList();
+	static int getNumberOfRooms();
+	static int getStandardItemChance();
+
+	static void populateRooms();
 
 	void populateItems(std::list<item*> items, ALLEGRO_BITMAP *map);
 	void saveLargerMapWithItems(int tileSize, const char* path);
+	void saveItemMap(const char* path);
 	void spawnItem(item * it, pos2D pos);
 	int getNumberOfItems();
 	void evaluateItems();
 	float evaluateDistance();
 	float evaluateSpread();
+	float evaluateRoomSpread();
 	float evaluateSpreadOfItem(itemSpawned* is);
-	void resetRoomDistances(); 
-	void resetRoomParents();
-	void checkRoomsDistancesToSpawn(); //make static
-	void checkRoomsDistancesToMainPath(); //make static
-	int checkRoomDistanceToMainPath(room* r); //make static
-	void findMainPath(); //make static
-	void setMainPath(std::list<room*> p); //remove	
-	std::list<room*> getMainPath(); //????
+	static void resetRoomDistances(); 
+	static void resetRoomParents();
+	static void checkRoomsDistancesToSpawn();
+	static void checkRoomsDistancesToMainPath(); 
+	static int checkRoomDistanceToMainPath(room* r); 
+	static void findMainPath();
+	static std::list<room*> getMainPath();
 	float getScore();
-
 	map();
 	map(map* m);
+	map(std::list<itemSpawned*> currentItems);
 	map(ALLEGRO_BITMAP *newMap, int itemChance);
 	map(ALLEGRO_BITMAP *newMap, int itemChance, std::list<room*> rooms);
 	map(ALLEGRO_BITMAP *newMap, std::list<room*> rooms, std::list<room*> mainPath, std::list<itemSpawned*> currentItems);
