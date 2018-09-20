@@ -103,11 +103,11 @@ int main(int argc, char **argv)
 
 
 	RandomManager Manager = RandomManager(bitmap, 70);
-	GeneticManager GeneticMan = GeneticManager(0.5f, 0.5f, 50, 5, &Manager, 0.1f, 5);
+	GeneticManager GeneticMan = GeneticManager(0.5f, 0.2f, 100, 10, &Manager, 0.1f, 2);
 
-	Manager.addItemFromFileName("beringela.png", 3, 1.0f, 1.0f, 5.0f);
-	Manager.addItemFromFileName("faca.png", 2, 4.0f, 10.0f,0.5f);
-	Manager.addItemFromFileName("escudo.png", 1, 5.0f, 10.0f,0.1f);
+	Manager.addItemFromFileName("beringela.png", 0,15,15, 1.0f, 1.0f, 4.0f);
+	Manager.addItemFromFileName("faca.png", 0,10,10, 2.0f, 10.0f,0.5f);
+	Manager.addItemFromFileName("escudo.png", 0,5, 5, 5.0f, 10.0f,0.1f);
 	Manager.addItemFromFileName("lotus.png", 0, 1, 20.0f, 100.0f,1.0f);
 	Manager.createMaps(10);
 

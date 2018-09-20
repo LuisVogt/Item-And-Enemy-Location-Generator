@@ -12,6 +12,9 @@ int map::standardItemChance = 0;
 std::list<room*> map::mainPath = std::list<room*>();
 std::list<room*> map::rooms = std::list<room*>();
 ALLEGRO_BITMAP * map::thisMap = nullptr;
+float map::maxDistanceScore = 0;
+float map::maxSpreadScore = 0;
+float map::maxRoomSpreadScore = 0;
 
 void map::setBitmap(ALLEGRO_BITMAP * m)
 {
@@ -74,7 +77,7 @@ room * map::getRandomRoom()
 		else
 			++i;
 	}
-	std::cout<< "Erro: Número aleatório fora do tamanho da lista de salas" <<std::endl; 
+	std::cout << "Erro: Número aleatório fora do tamanho da lista de salas" << std::endl;
 	return nullptr;
 }
 
@@ -386,7 +389,7 @@ int map::getNumberOfItems()
 
 void map::evaluateItems()
 {
-	//std::cout << score << "----" << evaluateDistance() << " + " << evaluateSpread() << std::endl;
+	//std::cout << score << "----" << evaluateDistance() << " + " << evaluateSpread() << "+" << evaluateRoomSpread() << std::endl;
 	score = evaluateDistance() + evaluateSpread() + evaluateRoomSpread();
 	if (score < 0.0f)
 	{
@@ -404,7 +407,9 @@ float map::evaluateDistance()
 			tempScore += findRoomFromTile(p)->getDistance() * is->getDistanceMultiplier();
 		}
 	}
-	return tempScore;
+	//std::cout << "Distance:" << tempScore << std::endl;
+
+	return (tempScore / maxDistanceScore) * 100;
 }
 
 float map::evaluateSpread()
@@ -414,7 +419,8 @@ float map::evaluateSpread()
 	{
 		tempScore += evaluateSpreadOfItem(is) * is->getDistanceMultiplier();
 	}
-	return tempScore;
+	//std::cout<< "Spread:" << tempScore <<std::endl; 
+	return (tempScore / maxSpreadScore) * 100;
 }
 
 float map::evaluateRoomSpread()
@@ -442,7 +448,9 @@ float map::evaluateRoomSpread()
 			totalScore += roomItemScoreTemp;
 		}
 	}
-	return totalScore;
+	//std::cout << "Room:" << totalScore << std::endl;
+
+	return (totalScore / maxRoomSpreadScore) * 100;
 }
 
 float map::evaluateSpreadOfItem(itemSpawned* is)
@@ -546,6 +554,53 @@ void map::findMainPath()
 	mainPath = Djikstra(spawnRoom, endRoom);
 	mainPath.emplace_back(spawnRoom);
 }
+
+void map::setMaxDistanceScore(float s)
+{
+	maxDistanceScore = s;
+	std::cout<< "Max distance score:" << s << std::endl; 
+}
+
+void map::setMaxSpreadScore(std::list<float> multipliers)
+{
+	float score = 0;
+	int x = al_get_bitmap_width(thisMap) / 2;
+	int y = al_get_bitmap_height(thisMap) / 2;
+	for each (float f in multipliers)
+	{
+		if (f > 1)
+			score += f * x + f * y;
+		else
+			score += x + y;
+	}
+	maxSpreadScore = score;
+	std::cout << "Max spread score:" << score << std::endl;
+
+}
+
+void map::setMaxRoomSpreadScore(std::list<float> multipliers, std::list<int> amount)
+{
+	float s = 0;
+	float baseScore = (1000 / numberOfRooms) / amount.size();
+	std::list<int>::iterator i = amount.begin();
+
+	for each (float f in multipliers)
+	{
+		if (f <= 1.0f)
+			s += baseScore * numberOfRooms;
+		else
+		{
+			s += baseScore * (numberOfRooms - 1);
+			s += baseScore * (powf(f, (*i)-1));
+		}
+		
+		++i;
+	}
+	maxRoomSpreadScore = s;
+	std::cout << "Max room score:" << s << std::endl;
+
+}
+
 
 /*void map::setMainPath(std::list<room*> p)
 {

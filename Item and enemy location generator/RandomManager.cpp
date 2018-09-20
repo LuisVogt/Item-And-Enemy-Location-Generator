@@ -68,6 +68,51 @@ void RandomManager::defineNumberOfItems()
 	}
 }
 
+void RandomManager::findMaxScores()
+{
+	findMaxDistanceScore();
+	findMaxSpreadScore();
+	findMaxRoomSpreadScore();
+}
+
+void RandomManager::findMaxDistanceScore()
+{
+	int maxdistance = 0;
+	float score = 0;
+	for each (room* r in map::getRoomList())
+	{
+		if (maxdistance < r->getDistance())
+			maxdistance = r->getDistance();
+	}
+	for each (item* i in items)
+	{
+		score += maxdistance * i->getDistanceMultiplier() * i->getNumberOfItems();
+	}
+	map::setMaxDistanceScore(score);
+}
+
+void RandomManager::findMaxSpreadScore()
+{
+	std::list<float> multipliers;
+	for each (item* i in items)
+	{
+		multipliers.emplace_back(i->getSpreadMultiplier());
+	}
+	map::setMaxSpreadScore(multipliers);
+}
+
+void RandomManager::findMaxRoomSpreadScore()
+{
+	std::list<float> multipliers;
+	std::list<int> amounts;
+	for each (item* i in items)
+	{
+		multipliers.emplace_back(i->getRoomSpreadMultiplier());
+		amounts.emplace_back(i->getNumberOfItems());
+	}
+	map::setMaxRoomSpreadScore(multipliers, amounts);
+}
+
 void RandomManager::createMaps(int numberOfMaps)
 {
 	--numberOfMaps;
@@ -79,6 +124,7 @@ void RandomManager::createMaps(int numberOfMaps)
 	map::setSpawnRoom(map::getRandomRoom());
 	map::checkRoomsDistancesToSpawn();
 	map::setEndRoom(map::getRandomRoom(map::getMaxDistance() - 1));
+	findMaxScores();
 	addMaps(numberOfMaps);
 }
 

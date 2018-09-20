@@ -21,6 +21,10 @@ public:
 	std::list<map*>* getMaps();
 	ALLEGRO_BITMAP* getMapBitMap();
 	void defineNumberOfItems();
+	void findMaxScores();
+	void findMaxDistanceScore();
+	void findMaxSpreadScore();
+	void findMaxRoomSpreadScore();
 	void createMaps(int numberOfMaps);
 	void addMaps(int numberOfMaps);
 	void addMap(map* m);

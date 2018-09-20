@@ -20,6 +20,9 @@ private:
 	ALLEGRO_BITMAP *biggerMap;
 	std::list<itemSpawned*> currentItems;
 	static int standardItemChance;
+	static float maxDistanceScore;
+	static float maxSpreadScore;
+	static float maxRoomSpreadScore;
 	float score;
 public:
 	static void setBitmap(ALLEGRO_BITMAP* m);
@@ -54,16 +57,26 @@ public:
 	void spawnItem(item * it, pos2D pos);
 	int getNumberOfItems();
 	void evaluateItems();
+
 	float evaluateDistance();
 	float evaluateSpread();
 	float evaluateRoomSpread();
 	float evaluateSpreadOfItem(itemSpawned* is);
+
+
+
+
 	static void resetRoomDistances(); 
 	static void resetRoomParents();
 	static void checkRoomsDistancesToSpawn();
 	static void checkRoomsDistancesToMainPath(); 
 	static int checkRoomDistanceToMainPath(room* r); 
 	static void findMainPath();
+
+	static void setMaxDistanceScore(float s);
+	static void setMaxSpreadScore(std::list<float> multipliers);
+	static void setMaxRoomSpreadScore(std::list<float> multipliers, std::list<int> amount);
+
 	static std::list<room*> getMainPath();
 	float getScore();
 	map();
